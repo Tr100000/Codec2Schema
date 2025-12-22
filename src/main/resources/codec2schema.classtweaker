@@ -1,0 +1,5 @@
+classTweaker v1 named
+
+accessible class net/minecraft/core/component/DataComponentPatch$PatchKey
+
+accessible field net/minecraft/resources/RegistryFixedCodec registryKey Lnet/minecraft/resources/ResourceKey;

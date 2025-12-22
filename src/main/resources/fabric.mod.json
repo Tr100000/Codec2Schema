@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "codec2schema",
+	"version": "${version}",
+	"name": "Codec2Schema",
+	"description": "A developer tool to convert Codecs to JSON Schemas.",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/codec2schema/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.tr100000.codec2schema.Codec2Schema"
+		]
+	},
+	"mixins": [
+		"codec2schema.mixins.json"
+	],
+  "accessWidener": "codec2schema.classtweaker",
+	"depends": {
+		"fabricloader": ">=0.18.3",
+		"minecraft": "*",
+		"java": ">=21"
+	}
+}

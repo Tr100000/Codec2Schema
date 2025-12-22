@@ -1,0 +1,30 @@
+{
+  "required": true,
+  "package": "io.github.tr100000.codec2schema.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CodecMixin",
+    "EitherMapCodecAccessor",
+    "EncoderCacheMixin",
+    "ExtraCodecsMixin",
+    "HolderSetCodecAccessor",
+    "KeyDispatchCodecAccessor",
+    "Kind1Mixin",
+    "MapCodecMixin",
+    "OptionalFieldCodecAccessor",
+    "RecordCodecBuilderAccessor",
+    "RecordCodecBuilderMixin",
+    "RecursiveCodecAccessor",
+    "RecursiveMapCodecAccessor",
+    "RegistryMixin",
+    "StringRepresentableMixin",
+    "specific.ComponentSerializationMixin",
+    "specific.TypedEntityDataMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+	}
+}
