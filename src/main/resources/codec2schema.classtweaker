@@ -12,3 +12,4 @@ accessible field net/minecraft/network/chat/ComponentSerialization$FuzzyCodec co
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typeFieldName Ljava/lang/String;
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typed Lcom/mojang/serialization/MapCodec;
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither fuzzy Lcom/mojang/serialization/MapCodec;
+accessible field net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement TEMPLATE_CODEC Lcom/mojang/serialization/Codec;

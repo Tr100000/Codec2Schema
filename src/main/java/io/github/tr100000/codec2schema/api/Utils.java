@@ -2,11 +2,14 @@ package io.github.tr100000.codec2schema.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.OptionalFieldCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
+import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecursiveCodecAccessor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public final class Utils {
     private Utils() {}
@@ -27,6 +30,18 @@ public final class Utils {
             return getPossibleValues(wrappedFieldMapCodec.original());
         }
         return Optional.empty();
+    }
+
+    public static String getFieldNameForDispatch(MapCodec<?> codec, Consumer<String> required) {
+        return switch (codec) {
+            case WrappedFieldMapCodec<?> wrappedFieldMapCodec -> {
+                String fieldName = wrappedFieldMapCodec.fieldName();
+                required.accept(fieldName);
+                yield fieldName;
+            }
+            case OptionalFieldCodec<?> optionalFieldCodec -> ((OptionalFieldCodecAccessor)optionalFieldCodec).getName();
+            default -> throw new IllegalArgumentException("Unexpected value: " + codec);
+        };
     }
 
     public static boolean isRecursiveMapCodec(Object obj) {

@@ -199,8 +199,7 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
     @SuppressWarnings("unchecked")
     private static <K, V> void keyDispatchField(JsonObject json, JsonObject properties, JsonArray required, KeyDispatchCodec<K, V> codec, SchemaContext context) {
         MapCodec<K> keyCodec = ((KeyDispatchCodecAccessor<K, V>)codec).getKeyCodec();
-        String typeFieldName = ((WrappedFieldMapCodec<?>)actually(keyCodec)).fieldName();
-        required.add(typeFieldName);
+        String typeFieldName = Utils.getFieldNameForDispatch(actually(keyCodec), required::add);
 
         if (context.debugMode) Codec2Schema.LOGGER.info("Starting dispatch: {}", typeFieldName);
 
