@@ -27,4 +27,23 @@ public final class JsonUtils {
             return newJson;
         }
     }
+
+    public static JsonObject schemaIfPropertyEquals(String propertyName, String value, JsonObject schema) {
+        JsonObject json = new JsonObject();
+
+        JsonObject ifJson = new JsonObject();
+        JsonObject properties = new JsonObject();
+        JsonObject property = new JsonObject();
+        property.addProperty("const", value);
+        properties.add(propertyName, property);
+        ifJson.add("properties", properties);
+
+        json.add("if", ifJson);
+        json.add("then", schema);
+        return json;
+    }
+
+    public static String toSchemaSafeString(String str) {
+        return str.replaceAll(" ", "_").replaceAll("/", "_");
+    }
 }

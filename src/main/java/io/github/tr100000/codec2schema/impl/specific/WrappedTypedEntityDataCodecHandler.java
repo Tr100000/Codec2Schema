@@ -12,7 +12,7 @@ public class WrappedTypedEntityDataCodecHandler implements CodecHandler<WrappedT
     }
 
     @Override
-    public JsonObject toSchema(WrappedTypedEntityDataCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(WrappedTypedEntityDataCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         return context.requestDefinition(CustomData.COMPOUND_TAG_CODEC);
     }
 }

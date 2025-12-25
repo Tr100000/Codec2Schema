@@ -12,12 +12,7 @@ public class RecursiveCodecHandler implements CodecHandler<Codec.RecursiveCodec<
     }
 
     @Override
-    public JsonObject toSchema(Codec.RecursiveCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(Codec.RecursiveCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         return context.requestDefinition(Utils.getRecursiveWrapped(codec));
-    }
-
-    @Override
-    public boolean shouldInline(Codec.RecursiveCodec<?> codec) {
-        return true;
     }
 }

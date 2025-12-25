@@ -1,5 +1,14 @@
 classTweaker v1 named
 
 accessible class net/minecraft/core/component/DataComponentPatch$PatchKey
+accessible class net/minecraft/network/chat/ComponentSerialization$FuzzyCodec
+accessible class net/minecraft/network/chat/ComponentSerialization$StrictEither
 
 accessible field net/minecraft/resources/RegistryFixedCodec registryKey Lnet/minecraft/resources/ResourceKey;
+accessible field net/minecraft/resources/RegistryFileCodec registryKey Lnet/minecraft/resources/ResourceKey;
+accessible field net/minecraft/resources/RegistryFileCodec elementCodec Lcom/mojang/serialization/Codec;
+accessible field net/minecraft/resources/RegistryFileCodec allowInline Z
+accessible field net/minecraft/network/chat/ComponentSerialization$FuzzyCodec codecs Ljava/util/Collection;
+accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typeFieldName Ljava/lang/String;
+accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typed Lcom/mojang/serialization/MapCodec;
+accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither fuzzy Lcom/mojang/serialization/MapCodec;

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TypedEntityData.class)
 @NullMarked
-public class TypedEntityDataMixin {
+public abstract class TypedEntityDataMixin {
     @Inject(method = "codec", at = @At("RETURN"), cancellable = true)
     private static <T> void codec(Codec<T> codec, CallbackInfoReturnable<Codec<TypedEntityData<T>>> cir) {
         Codec<TypedEntityData<T>> capturedReturnValue = cir.getReturnValue();

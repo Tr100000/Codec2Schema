@@ -13,7 +13,7 @@ public class EitherCodecHandler implements CodecHandler<EitherCodec<?, ?>> {
     }
 
     @Override
-    public JsonObject toSchema(EitherCodec<?, ?> codec, SchemaContext context) {
+    public JsonObject toSchema(EitherCodec<?, ?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         JsonArray anyOfArray = new JsonArray();
 

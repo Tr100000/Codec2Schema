@@ -27,7 +27,7 @@ public record NumberStreamCodecHandler(Codec<?> itemCodec) implements CodecHandl
     }
 
     @Override
-    public JsonObject toSchema(PrimitiveCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(PrimitiveCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "array");
         json.add("items", context.requestDefinition(itemCodec));

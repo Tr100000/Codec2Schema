@@ -12,7 +12,7 @@ public record UnboundedMapCodecHandler(UnboundedMapCodec<?, ?> codec) implements
     }
 
     @Override
-    public JsonObject toSchema(UnboundedMapCodec<?, ?> codec, SchemaContext context) {
+    public JsonObject toSchema(UnboundedMapCodec<?, ?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "object");
         JsonObject propertyNames = new JsonObject();

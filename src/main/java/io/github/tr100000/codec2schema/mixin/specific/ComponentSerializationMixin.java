@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ComponentSerialization.class)
-public class ComponentSerializationMixin {
+public abstract class ComponentSerializationMixin {
     @Inject(method = "flatRestrictedCodec", at = @At("RETURN"), cancellable = true)
     private static void flatRestrictedCodec(int i, CallbackInfoReturnable<Codec<Component>> cir) {
         Codec<Component> capturedReturnValue = cir.getReturnValue();

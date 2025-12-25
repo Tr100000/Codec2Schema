@@ -4,14 +4,12 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CodecWithValues<A> extends Codec<A> {
-    List<A> possibleValues();
-    @Nullable List<String> possibleStringValues();
+    List<StringValuePair<A>> possibleValues();
     Codec<A> original();
 
     @Override

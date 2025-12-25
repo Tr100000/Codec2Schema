@@ -2,9 +2,11 @@ package io.github.tr100000.codec2schema.api;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import io.github.tr100000.codec2schema.Codec2Schema;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jspecify.annotations.Nullable;
 
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import java.util.function.Supplier;
 
 public class SchemaContext {
     private final Map<String, DefinitionEntry> definitions = new Object2ObjectArrayMap<>();
+    private final LinkedList<String> definitionStack = new LinkedList<>();
 
     public boolean debugMode = false;
     public boolean allowInline = true;
@@ -38,13 +41,16 @@ public class SchemaContext {
         CodecHandler<Codec<?>> handler = CodecHandlerRegistry.getHandlerOrThrow(codec);
 
         if (allowInline && handler.shouldInline(codec)) {
-            return handler.toSchema(codec, this);
+            return handler.toSchema(codec, this, new DefinitionContext(Optional.empty(), definitionStack));
         }
 
         if (entry.isEmpty()) {
-            String name = getUniqueDefinition(handler.getName(codec).orElse("def"));
+            String name = getUniqueDefinition(JsonUtils.toSchemaSafeString(handler.getName(codec).orElse("def")));
             definitions.put(name, new TentativeDefinitionEntry(codec));
-            JsonObject json = handler.toSchema(codec, this);
+            if (debugMode) Codec2Schema.LOGGER.info(codec.toString());
+            definitionStack.push(name);
+            JsonObject json = handler.toSchema(codec, this, new DefinitionContext(Optional.of(name), definitionStack));
+            definitionStack.pop();
             if (debugMode) {
                 json.addProperty("_debug", codec.toString());
                 json.addProperty("_handler", handler.getClass().toString());
@@ -55,38 +61,13 @@ public class SchemaContext {
         else {
             return createRef(entry.get().getKey());
         }
-//        JsonObject json;
-//        boolean inline = allowInline && handler.shouldInline(codec);
-//        String name = "";
-//
-//        if (!inline && (entry.isEmpty() || entry.get() instanceof TentativeDefinitionEntry)) {
-//            name = getUniqueDefinition("def");
-//            definitions.put(name, new TentativeDefinitionEntry(codec));
-//        }
-//
-//        if (entry.isPresent()) {
-//            if (entry.get() instanceof FinishedDefinitionEntry finishedEntry) {
-//                json = finishedEntry.json();
-//            }
-//            else {
-//                json = createRef(name);
-//            }
-//        }
-//        else {
-//            json = handler.toSchema(codec, this);
-//        }
-//
-//        if (inline) {
-//            return json; // inline definition
-//        }
-//        else {
-//            if (debugMode) {
-//                json.addProperty("_debug", handler.getName(codec));
-//                json.addProperty("_handler", handler.getClass().toString());
-//            }
-//            addDefinition(name, codec, json);
-//            return createRef(name); // ref to definition
-//        }
+    }
+
+    public Optional<String> tryGetDefinitionName(Codec<?> codec) {
+        return definitions.entrySet().stream()
+                .filter(e -> codec.equals(e.getValue().codec()))
+                .map(Map.Entry::getKey)
+                .findAny();
     }
 
     public JsonObject createRef(String name) {
@@ -94,6 +75,15 @@ public class SchemaContext {
         JsonObject json = new JsonObject();
         json.addProperty("$ref", "#/definitions/" + name);
         return json;
+    }
+
+    public void cancel(String name) {
+        if (definitions.get(name) instanceof TentativeDefinitionEntry) {
+            definitions.remove(name);
+        }
+        else {
+            throw new IllegalStateException("Definition " + name + " cannot be cancelled");
+        }
     }
 
     private String getUniqueDefinition(String name) {
@@ -125,4 +115,6 @@ public class SchemaContext {
 
     record TentativeDefinitionEntry(Codec<?> codec) implements DefinitionEntry {}
     record FinishedDefinitionEntry(@Nullable Codec<?> codec, JsonObject json) implements DefinitionEntry {}
+
+    public record DefinitionContext(Optional<String> name, LinkedList<String> definitionStack) {}
 }

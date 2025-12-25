@@ -19,7 +19,7 @@ public class ListCodecHandler implements CodecHandler<Codec<?>> {
     }
 
     @Override
-    public JsonObject toSchema(Codec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(Codec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         if (codec instanceof ListCodec<?> listCodec) {
             return toSchema(listCodec.elementCodec(), minSize(listCodec), maxSize(listCodec), context);
         }

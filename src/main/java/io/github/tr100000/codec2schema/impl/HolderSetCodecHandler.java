@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
+import io.github.tr100000.codec2schema.impl.specific.IdentifierCodecHandler;
 import io.github.tr100000.codec2schema.mixin.HolderSetCodecAccessor;
 import net.minecraft.resources.HolderSetCodec;
 
@@ -14,13 +15,13 @@ public record HolderSetCodecHandler(HolderSetCodec<?> codec) implements CodecHan
     }
 
     @Override
-    public JsonObject toSchema(HolderSetCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(HolderSetCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         JsonArray anyOf = new JsonArray();
 
         JsonObject tagJson = new JsonObject();
         tagJson.addProperty("type", "string");
-        tagJson.addProperty("pattern", "#([_\\-a-z0-9\\.]:)?[_\\-a-z0-9\\/\\.]");
+        tagJson.addProperty("pattern", "#" + IdentifierCodecHandler.PATTERN);
 
         JsonObject entryJson = context.requestDefinition(((HolderSetCodecAccessor)codec).getElementCodec());
 

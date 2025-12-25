@@ -12,7 +12,7 @@ public record WrappedCodecHandler(WrappedCodec<?> codec) implements CodecHandler
     }
 
     @Override
-    public JsonObject toSchema(WrappedCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(WrappedCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         return context.requestDefinition(codec.original());
     }
 

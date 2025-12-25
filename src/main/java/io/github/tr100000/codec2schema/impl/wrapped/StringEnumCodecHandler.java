@@ -22,7 +22,7 @@ public record StringEnumCodecHandler(String[] enumValues) implements CodecHandle
     }
 
     @Override
-    public JsonObject toSchema(Codec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(Codec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         JsonArray enumArray = new JsonArray();
         for (String enumValue : enumValues) {

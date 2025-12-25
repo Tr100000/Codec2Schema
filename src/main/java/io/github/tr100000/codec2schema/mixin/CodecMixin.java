@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -138,6 +139,29 @@ public interface CodecMixin {
     @Inject(method = "mapResult", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
     private <A> void mapResult(Codec.ResultFunction<A> function, CallbackInfoReturnable<Codec<A>> cir) {
+        Codec<A> capturedReturnValue = cir.getReturnValue();
+        Codec<A> thisCodec = (Codec<A>)this;
+        cir.setReturnValue(new WrappedCodec<>() {
+            @Override
+            public Codec<A> original() {
+                return thisCodec;
+            }
+
+            @Override
+            public Codec<A> getWrapped() {
+                return capturedReturnValue;
+            }
+
+            @Override
+            public String toString() {
+                return capturedReturnValue.toString();
+            }
+        });
+    }
+
+    @Inject(method = "promotePartial(Ljava/util/function/Consumer;)Lcom/mojang/serialization/Codec;", at = @At("RETURN"), cancellable = true)
+    @SuppressWarnings("unchecked")
+    private <A> void promotePartial(Consumer<String> onError, CallbackInfoReturnable<Codec<A>> cir) {
         Codec<A> capturedReturnValue = cir.getReturnValue();
         Codec<A> thisCodec = (Codec<A>)this;
         cir.setReturnValue(new WrappedCodec<>() {

@@ -11,7 +11,7 @@ public class PassthroughCodecHandler implements CodecHandler<Codec<?>> {
     }
 
     @Override
-    public JsonObject toSchema(Codec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(Codec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         return new JsonObject();
     }
 

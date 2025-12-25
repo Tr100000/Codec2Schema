@@ -7,7 +7,7 @@ import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 
 public record PrimitiveCodecHandler(String type) implements CodecHandler<PrimitiveCodec<?>> {
-    public static boolean isPrimitiveCodec(Codec<?> codec) {
+    public static boolean predicate(Codec<?> codec) {
         return codec instanceof PrimitiveCodec<?>;
     }
 
@@ -24,7 +24,7 @@ public record PrimitiveCodecHandler(String type) implements CodecHandler<Primiti
     }
 
     @Override
-    public JsonObject toSchema(PrimitiveCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(PrimitiveCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         json.addProperty("type", type);
         return json;

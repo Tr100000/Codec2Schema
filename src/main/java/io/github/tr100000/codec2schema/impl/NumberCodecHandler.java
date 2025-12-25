@@ -14,7 +14,7 @@ public record NumberCodecHandler(String type, Optional<Number> min, Optional<Num
         this(type, Optional.of(min), Optional.of(max));
     }
 
-    public static boolean isNumberCodec(Codec<?> codec) {
+    public static boolean predicate(Codec<?> codec) {
         return codec instanceof PrimitiveCodec<?>;
     }
 
@@ -34,7 +34,7 @@ public record NumberCodecHandler(String type, Optional<Number> min, Optional<Num
         }
     }
 
-    public static boolean isRangedNumberCodec(Codec<?> codec) {
+    public static boolean rangePredicate(Codec<?> codec) {
         return codec == ExtraCodecs.UNSIGNED_BYTE
             || codec == ExtraCodecs.NON_NEGATIVE_INT
             || codec == ExtraCodecs.POSITIVE_INT
@@ -72,7 +72,7 @@ public record NumberCodecHandler(String type, Optional<Number> min, Optional<Num
     }
 
     @Override
-    public JsonObject toSchema(Codec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(Codec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         json.addProperty("type", type);
         min.ifPresent(m -> json.addProperty("minimum", m));

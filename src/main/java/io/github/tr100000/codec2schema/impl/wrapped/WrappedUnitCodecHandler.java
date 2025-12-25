@@ -12,7 +12,7 @@ public class WrappedUnitCodecHandler implements CodecHandler<WrappedUnitCodec<?>
     }
 
     @Override
-    public JsonObject toSchema(WrappedUnitCodec<?> codec, SchemaContext context) {
+    public JsonObject toSchema(WrappedUnitCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         return new JsonObject();
     }
 
