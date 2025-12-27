@@ -60,8 +60,6 @@ import net.minecraft.world.timeline.Timeline;
 public class Codec2SchemaGeneration implements SchemaGenerationEntrypoint {
     @Override
     public void generate(SchemaExporter exporter) {
-//        exporter.setOptions(context -> context.debugMode = true);
-
         // https://minecraft.wiki/w/Data_pack#Folder_structure
         exportDataCodec(exporter, TagFile.CODEC, "tags.json");
         exportDataCodec(exporter, Advancement.CODEC, "advancement.json");

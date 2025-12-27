@@ -2,6 +2,7 @@ plugins {
     id "net.fabricmc.fabric-loom-remap" version "${loom_version}"
     id "com.diffplug.spotless" version "8.+"
     id "maven-publish"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 version = "$project.version+${minecraft_version}"
@@ -27,6 +28,18 @@ dependencies {
 }
 
 apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scripts/devlogin.gradle"
+
+modrinth {
+    projectId = "codec2schema"
+    versionNumber = project.version
+    versionName = project.version
+    uploadFile = remapJar
+    additionalFiles = [remapSourcesJar]
+    changelog = rootProject.file("CHANGELOG.md").text
+    syncBodyFrom = rootProject.file("README.md").text
+}
+
+tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 
 loom {
     accessWidenerPath = file("src/main/resources/codec2schema.classtweaker")

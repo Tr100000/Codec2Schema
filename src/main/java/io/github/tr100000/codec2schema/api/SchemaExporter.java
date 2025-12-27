@@ -7,11 +7,12 @@ import io.github.tr100000.codec2schema.Codec2Schema;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SchemaExporter implements BiConsumer<Codec<?>, String> {
-    private Consumer<SchemaContext> options = ignored -> {};
+    private Consumer<SchemaContext> options;
 
     public void accept(Codec<?> codec, String path) {
         export(codec, Codec2Schema.EXPORT_ROOT_DIR.resolve(path));
@@ -25,13 +26,23 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
         export(codec, p);
     }
 
-    public void setOptions(Consumer<SchemaContext> options) {
-        this.options = options;
+    public void setOption(Consumer<SchemaContext> options) {
+        Objects.requireNonNull(options);
+        if (this.options == null) {
+            this.options = options;
+        }
+        else {
+            this.options = this.options.andThen(options);
+        }
+    }
+
+    public void clearOptions() {
+        options = null;
     }
 
     private JsonObject convert(Codec<?> codec) {
         SchemaContext context = new SchemaContext();
-        options.accept(context);
+        if (options != null) options.accept(context);
         JsonObject json = context.requestDefinition(codec);
         json.addProperty("$schema", "https://json-schema.org/draft-07/schema");
         context.addDefinitions(json);

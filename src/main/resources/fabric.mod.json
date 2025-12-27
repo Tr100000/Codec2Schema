@@ -3,16 +3,16 @@
 	"id": "codec2schema",
 	"version": "${version}",
 	"name": "Codec2Schema",
-	"description": "A developer tool to convert Codecs to JSON Schemas.",
+	"description": "A tool to convert codecs to JSON schemas.",
 	"authors": [
-		"Me!"
+		"Tr100000"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/project/codec2schema",
+		"sources": "https://github.com/Tr100000/Codec2Schema",
+    "issues": "https://github.com/Tr100000/Codec2Schema"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/codec2schema/icon.png",
+	"license": "MIT",
 	"environment": "*",
 	"entrypoints": {
 		"main": ["io.github.tr100000.codec2schema.Codec2Schema"],
