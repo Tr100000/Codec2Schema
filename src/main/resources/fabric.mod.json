@@ -8,9 +8,9 @@
 		"Tr100000"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/project/codec2schema",
+		"homepage": "https://modrinth.com/mod/codec2schema",
 		"sources": "https://github.com/Tr100000/Codec2Schema",
-    "issues": "https://github.com/Tr100000/Codec2Schema"
+    "issues": "https://github.com/Tr100000/Codec2Schema/issues"
 	},
 	"license": "MIT",
 	"environment": "*",
