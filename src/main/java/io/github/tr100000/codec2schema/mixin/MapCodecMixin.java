@@ -6,8 +6,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
-import io.github.tr100000.codec2schema.api.WrappedMapCodec;
-import io.github.tr100000.codec2schema.api.WrappedUnitCodec;
+import io.github.tr100000.codec2schema.api.codec.WrappedMapCodec;
+import io.github.tr100000.codec2schema.api.codec.WrappedUnitCodec;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,10 +17,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Mixin(MapCodec.class)
-public abstract class MapCodecMixin {
+public abstract class MapCodecMixin<A> {
     @Inject(method = "xmap", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
-    private <A, S> void xmap(Function<? super A, ? extends S> to, Function<? super S, ? extends A> from, CallbackInfoReturnable<MapCodec<S>> cir) {
+    private <S> void xmap(Function<? super A, ? extends S> to, Function<? super S, ? extends A> from, CallbackInfoReturnable<MapCodec<S>> cir) {
         MapCodec<S> capturedReturnValue = cir.getReturnValue();
         MapCodec<A> thisCodec = (MapCodec<A>)(Object)this;
         cir.setReturnValue(new WrappedMapCodec<>() {
@@ -38,7 +38,7 @@ public abstract class MapCodecMixin {
 
     @Inject(method = "flatXmap", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
-    private <A, S> void flatXmap(Function<? super A, ? extends DataResult<? extends S>> to, Function<? super S, ? extends DataResult<? extends A>> from, CallbackInfoReturnable<MapCodec<S>> cir) {
+    private <S> void flatXmap(Function<? super A, ? extends DataResult<? extends S>> to, Function<? super S, ? extends DataResult<? extends A>> from, CallbackInfoReturnable<MapCodec<S>> cir) {
         MapCodec<S> capturedReturnValue = cir.getReturnValue();
         MapCodec<A> thisCodec = (MapCodec<A>)(Object)this;
         cir.setReturnValue(new WrappedMapCodec<>() {
@@ -56,7 +56,7 @@ public abstract class MapCodecMixin {
 
     @Inject(method = "withLifecycle(Lcom/mojang/serialization/Lifecycle;)Lcom/mojang/serialization/MapCodec;", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
-    private <A> void withLifecycle(Lifecycle lifecycle, CallbackInfoReturnable<MapCodec<A>> cir) {
+    private void withLifecycle(Lifecycle lifecycle, CallbackInfoReturnable<MapCodec<A>> cir) {
         MapCodec<A> capturedReturnValue = cir.getReturnValue();
         MapCodec<A> thisCodec = (MapCodec<A>)(Object)this;
         cir.setReturnValue(new WrappedMapCodec<>() {
@@ -74,7 +74,7 @@ public abstract class MapCodecMixin {
 
     @Inject(method = "mapResult", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
-    private <A> void mapResult(MapCodec.ResultFunction<A> function, CallbackInfoReturnable<MapCodec<A>> cir) {
+    private void mapResult(MapCodec.ResultFunction<A> function, CallbackInfoReturnable<MapCodec<A>> cir) {
         MapCodec<A> capturedReturnValue = cir.getReturnValue();
         MapCodec<A> thisCodec = (MapCodec<A>)(Object)this;
         cir.setReturnValue(new WrappedMapCodec<>() {
@@ -128,9 +128,10 @@ public abstract class MapCodecMixin {
     }
 
     @Inject(method = "recursive", at = @At("RETURN"), cancellable = true)
+    @SuppressWarnings("unchecked")
     private static <A> void recursive(String name, Function<Codec<A>, MapCodec<A>> wrapped, CallbackInfoReturnable<MapCodec<A>> cir) {
         MapCodec<A> capturedReturnValue = cir.getReturnValue();
-        MapCodec<?> wrappedCodec = ((RecursiveMapCodecAccessor)capturedReturnValue).getWrapped().get();
+        MapCodec<A> wrappedCodec = ((RecursiveMapCodecAccessor<A>)capturedReturnValue).getWrapped().get();
         cir.setReturnValue(new WrappedMapCodec<>() {
             @Override
             public MapCodec<?> original() {

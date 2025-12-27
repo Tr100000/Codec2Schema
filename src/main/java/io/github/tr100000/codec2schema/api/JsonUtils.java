@@ -1,6 +1,7 @@
 package io.github.tr100000.codec2schema.api;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 public final class JsonUtils {
@@ -28,19 +29,30 @@ public final class JsonUtils {
         }
     }
 
-    public static JsonObject schemaIfPropertyEquals(String propertyName, String value, JsonObject schema) {
+    public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject schema) {
         JsonObject json = new JsonObject();
 
         JsonObject ifJson = new JsonObject();
         JsonObject properties = new JsonObject();
         JsonObject property = new JsonObject();
-        property.addProperty("const", value);
+        setProperty(property, "const", value);
         properties.add(propertyName, property);
         ifJson.add("properties", properties);
 
         json.add("if", ifJson);
         json.add("then", schema);
         return json;
+    }
+
+    public static void setProperty(JsonObject json, String property, Object value) {
+        switch (value) {
+            case null -> json.add(property, JsonNull.INSTANCE);
+            case String s -> json.addProperty(property, s);
+            case Number n -> json.addProperty(property, n);
+            case Boolean b -> json.addProperty(property, b);
+            case Character c -> json.addProperty(property, c);
+            default -> throw new IllegalArgumentException(value.getClass().toString());
+        }
     }
 
     public static String toSchemaSafeString(String str) {

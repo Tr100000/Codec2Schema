@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapDecoder;
@@ -17,9 +18,9 @@ import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.SchemaContext;
-import io.github.tr100000.codec2schema.api.StringValuePair;
 import io.github.tr100000.codec2schema.api.Utils;
-import io.github.tr100000.codec2schema.api.WrappedMapCodec;
+import io.github.tr100000.codec2schema.api.ValueStringPair;
+import io.github.tr100000.codec2schema.api.codec.WrappedMapCodec;
 import io.github.tr100000.codec2schema.mixin.EitherMapCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.KeyDispatchCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
@@ -75,7 +76,7 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
             return singlePropertySchema(wrappedFieldMapCodec.fieldName(), wrappedFieldMapCodec.original(), true, context);
         }
         else if (codec instanceof OptionalFieldCodec<?> optionalFieldCodec) {
-            OptionalFieldCodecAccessor accessor = (OptionalFieldCodecAccessor)optionalFieldCodec;
+            OptionalFieldCodecAccessor<?> accessor = (OptionalFieldCodecAccessor<?>)optionalFieldCodec;
             return singlePropertySchema(accessor.getName(), accessor.getElementCodec(), false, context);
         }
         else if (ComponentSerializationCodecUtils.canHandle(codec)) {
@@ -135,7 +136,7 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
     }
 
     private static MapCodec<?> getFieldCodec(RecordCodecBuilder<?, ?> codecBuilder) {
-        return actually((MapCodec<?>)((RecordCodecBuilderAccessor)(Object)codecBuilder).getDecoder());
+        return actually((MapCodec<?>)((RecordCodecBuilderAccessor<?>)(Object)codecBuilder).getDecoder());
     }
 
     private static void handleField(JsonObject json, JsonObject properties, JsonArray required, MapCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
@@ -145,12 +146,12 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
                 required.add(wrappedFieldCodec.fieldName());
             }
             case OptionalFieldCodec<?> optionalFieldCodec -> {
-                OptionalFieldCodecAccessor accessor = (OptionalFieldCodecAccessor)optionalFieldCodec;
+                OptionalFieldCodecAccessor<?> accessor = (OptionalFieldCodecAccessor<?>)optionalFieldCodec;
                 properties.add(accessor.getName(), context.requestDefinition(accessor.getElementCodec()));
             }
             case EitherMapCodec<?, ?> eitherMapCodec -> {
                 JsonArray anyOf = new JsonArray();
-                EitherMapCodecAccessor accessor = (EitherMapCodecAccessor)(Object)eitherMapCodec;
+                EitherMapCodecAccessor<?, ?> accessor = (EitherMapCodecAccessor<?, ?>)(Object)eitherMapCodec;
                 anyOf.add(context.requestDefinition(accessor.getFirst().codec()));
                 anyOf.add(context.requestDefinition(accessor.getSecond().codec()));
 
@@ -203,20 +204,24 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
 
         if (context.debugMode) Codec2Schema.LOGGER.info("Starting dispatch: {}", typeFieldName);
 
-        Optional<List<StringValuePair<K>>> possibleValues = Utils.getPossibleValues(keyCodec);
+        Optional<List<ValueStringPair<K>>> possibleValues = Utils.getPossibleValues(keyCodec);
         if (possibleValues.isPresent()) {
             JsonArray enumArray = new JsonArray();
             JsonArray allOfArray = JsonUtils.getOrCreateArray(json, "allOf");
 
             possibleValues.get().forEach(value -> {
                 if (context.debugMode) Codec2Schema.LOGGER.info(value.str());
-                MapDecoder<V> decoder = (MapDecoder<V>)((KeyDispatchCodecAccessor<K, V>)codec).getDecoder().apply(value.value()).getOrThrow();
-                if (decoder instanceof MapCodec<V> mapCodec) {
+                if (value.value() != null) {
                     enumArray.add(value.str());
-                    allOfArray.add(JsonUtils.schemaIfPropertyEquals(typeFieldName, value.str(), context.requestDefinition(mapCodec.codec())));
-                }
-                else {
-                    throw new IllegalStateException(String.format("Map decoder was of type %s", decoder.getClass()));
+                    DataResult<MapDecoder<V>> decoder = (DataResult<MapDecoder<V>>)((KeyDispatchCodecAccessor<K, V>)codec).getDecoder().apply(value.value());
+                    if (decoder.hasResultOrPartial()) {
+                        if (decoder.getPartialOrThrow() instanceof MapCodec<V> mapCodec) {
+                            allOfArray.add(JsonUtils.schemaIfPropertyEquals(typeFieldName, value.str(), context.requestDefinition(mapCodec.codec())));
+                        }
+                        else {
+                            throw new IllegalStateException(String.format("Map decoder was of type %s", decoder.getClass()));
+                        }
+                    }
                 }
             });
 
@@ -241,10 +246,12 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
     }
 
     private static <K, V> void wrappedDispatchOptionalValueMapCodecSchema(JsonObject json, JsonObject properties, JsonArray required, WrappedDispatchOptionalValueMapCodec<K, V> codec, SchemaContext context) {
-        if (context.debugMode) Codec2Schema.LOGGER.info("Starting dispatch: {} -> {}", codec.typeKey(), codec.dispatchKey());
+        String typeKey = codec.typeKey();
+        String dispatchKey = codec.dispatchKey();
+        if (context.debugMode) Codec2Schema.LOGGER.info("Starting dispatch: {} -> {}", typeKey, dispatchKey);
 
         Codec<K> keyCodec = codec.keyCodec();
-        Optional<List<StringValuePair<K>>> possibleValues = Utils.getPossibleValues(keyCodec);
+        Optional<List<ValueStringPair<K>>> possibleValues = Utils.getPossibleValues(keyCodec);
         if (possibleValues.isPresent()) {
             JsonArray enumArray = new JsonArray();
             JsonArray allOfArray = JsonUtils.getOrCreateArray(json, "allOf");
@@ -254,30 +261,30 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
 
                 JsonObject schema = new JsonObject();
                 JsonObject schemaProperties = new JsonObject();
-                schemaProperties.add(codec.dispatchKey(), context.requestDefinition(codec.valueCodecFunction().apply(value.value())));
+                schemaProperties.add(dispatchKey, context.requestDefinition(codec.valueCodecFunction().apply(value.value())));
                 schema.add("properties", schemaProperties);
 
                 enumArray.add(value.str());
-                allOfArray.add(JsonUtils.schemaIfPropertyEquals(codec.typeKey(), value.str(), schema));
+                allOfArray.add(JsonUtils.schemaIfPropertyEquals(typeKey, value.str(), schema));
             });
 
             JsonObject enumProperty = new JsonObject();
             enumProperty.add("enum", enumArray);
-            properties.add(codec.typeKey(), enumProperty);
+            properties.add(typeKey, enumProperty);
         }
         else {
-            properties.add(codec.typeKey(), new JsonObject());
+            properties.add(typeKey, new JsonObject());
         }
 
-        if (context.debugMode) Codec2Schema.LOGGER.info("Finished dispatch: {} -> {}", codec.typeKey(), codec.dispatchKey());
+        if (context.debugMode) Codec2Schema.LOGGER.info("Finished dispatch: {} -> {}", typeKey, dispatchKey);
 
-        required.add(codec.typeKey());
+        required.add(typeKey);
     }
 
     private static JsonObject eitherMapCodecSchema(EitherMapCodec<?, ?> codec, SchemaContext context) {
         JsonObject json = new JsonObject();
 
-        EitherMapCodecAccessor accessor = (EitherMapCodecAccessor)(Object)codec;
+        EitherMapCodecAccessor<?, ?> accessor = (EitherMapCodecAccessor<?, ?>)(Object)codec;
         JsonArray anyOf = new JsonArray();
         anyOf.add(context.requestDefinition(accessor.getFirst().codec()));
         anyOf.add(context.requestDefinition(accessor.getSecond().codec()));
@@ -289,7 +296,7 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
     private static JsonObject pairMapCodecSchema(PairMapCodec<?, ?> codec, SchemaContext context) {
         JsonObject json = new JsonObject();
 
-        PairMapCodecAccessor accessor = (PairMapCodecAccessor)(Object)codec;
+        PairMapCodecAccessor<?, ?> accessor = (PairMapCodecAccessor<?, ?>)(Object)codec;
         JsonArray allOf = new JsonArray();
         allOf.add(context.requestDefinition(accessor.getFirst().codec()));
         allOf.add(context.requestDefinition(accessor.getSecond().codec()));

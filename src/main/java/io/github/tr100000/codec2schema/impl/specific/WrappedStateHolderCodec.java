@@ -1,7 +1,7 @@
 package io.github.tr100000.codec2schema.impl.specific;
 
 import com.mojang.serialization.Codec;
-import io.github.tr100000.codec2schema.api.WrappedCodec;
+import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import net.minecraft.world.level.block.state.StateHolder;
 import org.jspecify.annotations.NullMarked;
 

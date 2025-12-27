@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class ListCodecHandler implements CodecHandler<Codec<?>> {
-    protected static final Map<Codec<?>, OverrideEntry> SIZE_OVERRIDES = new Object2ObjectOpenHashMap<>();
+    private static final Map<Codec<?>, OverrideEntry> SIZE_OVERRIDES = new Object2ObjectOpenHashMap<>();
 
     public static boolean predicate(Codec<?> codec) {
         return codec instanceof ListCodec<?> || SIZE_OVERRIDES.containsKey(codec);
@@ -29,7 +29,7 @@ public class ListCodecHandler implements CodecHandler<Codec<?>> {
         }
     }
 
-    public JsonObject toSchema(Codec<?> codec, Optional<Integer> min, Optional<Integer> max, SchemaContext context) {
+    public static JsonObject toSchema(Codec<?> codec, Optional<Integer> min, Optional<Integer> max, SchemaContext context) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "array");
         json.add("items", context.requestDefinition(codec));

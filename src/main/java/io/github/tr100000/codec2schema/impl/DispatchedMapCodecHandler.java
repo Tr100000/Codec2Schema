@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.DispatchedMapCodec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
-import io.github.tr100000.codec2schema.api.StringValuePair;
 import io.github.tr100000.codec2schema.api.Utils;
+import io.github.tr100000.codec2schema.api.ValueStringPair;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class DispatchedMapCodecHandler<K, V> implements CodecHandler<DispatchedM
 
     @Override
     public JsonObject toSchema(DispatchedMapCodec<K, V> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
-        Optional<List<StringValuePair<K>>> possibleKeys = Utils.getPossibleValues(codec.keyCodec());
+        Optional<List<ValueStringPair<K>>> possibleKeys = Utils.getPossibleValues(codec.keyCodec());
         if (possibleKeys.isPresent()) {
             return toSchema(possibleKeys.get().stream()
                     .map(pair -> pair.mapValue(codec.valueCodecFunction()::apply)), context);
@@ -35,7 +35,7 @@ public class DispatchedMapCodecHandler<K, V> implements CodecHandler<DispatchedM
         }
     }
 
-    public static <T extends Codec<?>> JsonObject toSchema(Stream<StringValuePair<T>> pairs, SchemaContext context) {
+    public static <T extends Codec<?>> JsonObject toSchema(Stream<ValueStringPair<T>> pairs, SchemaContext context) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "object");
 

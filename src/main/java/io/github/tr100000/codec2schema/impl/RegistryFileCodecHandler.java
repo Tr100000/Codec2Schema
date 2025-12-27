@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
+import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import net.minecraft.resources.RegistryFileCodec;
 
@@ -16,15 +17,13 @@ public class RegistryFileCodecHandler implements CodecHandler<RegistryFileCodec<
 
     @Override
     public JsonObject toSchema(RegistryFileCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
-
         if (codec.allowInline) {
             JsonObject json = new JsonObject();
-            JsonObject strObj = RegistryFixedCodecHandler.requestDefinition(codec.registryKey, context);
             JsonObject inlineObj = context.requestDefinition(codec.elementCodec);
-            JsonArray anyOf = new JsonArray();
-            anyOf.add(strObj);
+            JsonObject strObj = RegistryFixedCodecHandler.requestDefinition(codec.registryKey, context);
+            JsonArray anyOf = JsonUtils.getOrCreateArray(json, "anyOf");
             anyOf.add(inlineObj);
-            json.add("anyOf", anyOf);
+            anyOf.add(strObj);
             return json;
         }
         else {

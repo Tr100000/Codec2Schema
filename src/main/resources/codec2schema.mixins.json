@@ -9,6 +9,7 @@
     "ExtraCodecsMixin",
     "HolderSetCodecAccessor",
     "KeyDispatchCodecAccessor",
+    "LateBoundIdMapperMixin",
     "MapCodecMixin",
     "OptionalFieldCodecAccessor",
     "PairMapCodecAccessor",

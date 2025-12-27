@@ -1,15 +1,16 @@
-package io.github.tr100000.codec2schema.api;
+package io.github.tr100000.codec2schema.api.codec;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import io.github.tr100000.codec2schema.api.ValueStringPair;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CodecWithValues<A> extends Codec<A> {
-    List<StringValuePair<A>> possibleValues();
+public interface CodecWithValuePairs<A> extends Codec<A> {
+    List<ValueStringPair<A>> possibleValues();
     Codec<A> original();
 
     @Override

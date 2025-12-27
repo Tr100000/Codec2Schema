@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.EitherCodec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
+import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 
 public class EitherCodecHandler implements CodecHandler<EitherCodec<?, ?>> {
@@ -15,12 +16,9 @@ public class EitherCodecHandler implements CodecHandler<EitherCodec<?, ?>> {
     @Override
     public JsonObject toSchema(EitherCodec<?, ?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
-        JsonArray anyOfArray = new JsonArray();
-
-        anyOfArray.add(context.requestDefinition(codec.first()));
-        anyOfArray.add(context.requestDefinition(codec.second()));
-
-        json.add("anyOf", anyOfArray);
+        JsonArray anyOf = JsonUtils.getOrCreateArray(json, "anyOf");
+        anyOf.add(context.requestDefinition(codec.first()));
+        anyOf.add(context.requestDefinition(codec.second()));
         return json;
     }
 

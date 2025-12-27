@@ -1,8 +1,8 @@
 package io.github.tr100000.codec2schema.mixin;
 
 import com.mojang.serialization.Codec;
-import io.github.tr100000.codec2schema.api.CodecWithValues;
-import io.github.tr100000.codec2schema.api.StringValuePair;
+import io.github.tr100000.codec2schema.api.ValueStringPair;
+import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import org.jspecify.annotations.NullMarked;
@@ -16,17 +16,18 @@ import java.util.Optional;
 
 @Mixin(Registry.class)
 @NullMarked
-public interface RegistryMixin {
+// TODO inject into referenceHolderWithLifecycle instead
+public interface RegistryMixin<T> {
     @Inject(method = "byNameCodec", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
-    private <T> void byNameCodec(CallbackInfoReturnable<Codec<T>> cir) {
+    private void byNameCodec(CallbackInfoReturnable<Codec<T>> cir) {
         Codec<T> capturedReturnValue = cir.getReturnValue();
         Registry<T> thisRegistry = (Registry<T>)this;
-        cir.setReturnValue(new CodecWithValues<>() {
+        cir.setReturnValue(new CodecWithValuePairs<>() {
             @Override
-            public List<StringValuePair<T>> possibleValues() {
+            public List<ValueStringPair<T>> possibleValues() {
                 return thisRegistry.stream()
-                        .map(registered -> new StringValuePair<>(registered, thisRegistry.getKey(registered).toString()))
+                        .map(registered -> new ValueStringPair<>(registered, thisRegistry.getKey(registered).toString()))
                         .toList();
             }
 
@@ -49,17 +50,17 @@ public interface RegistryMixin {
 
     @Inject(method = "holderByNameCodec", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
-    private <T> void referenceHolderWithLifecycle(CallbackInfoReturnable<Codec<Holder.Reference<T>>> cir) {
+    private void referenceHolderWithLifecycle(CallbackInfoReturnable<Codec<Holder.Reference<T>>> cir) {
         Codec<Holder.Reference<T>> capturedReturnValue = cir.getReturnValue();
         Registry<T> thisRegistry = (Registry<T>)this;
-        cir.setReturnValue(new CodecWithValues<>() {
+        cir.setReturnValue(new CodecWithValuePairs<>() {
             @Override
-            public List<StringValuePair<Holder.Reference<T>>> possibleValues() {
+            public List<ValueStringPair<Holder.Reference<T>>> possibleValues() {
                 return thisRegistry.stream()
                         .map(thisRegistry::getKey)
                         .map(thisRegistry::get)
                         .map(Optional::orElseThrow)
-                        .map(reference -> new StringValuePair<>(reference, reference.key().identifier().toString()))
+                        .map(reference -> new ValueStringPair<>(reference, reference.key().identifier().toString()))
                         .toList();
             }
 

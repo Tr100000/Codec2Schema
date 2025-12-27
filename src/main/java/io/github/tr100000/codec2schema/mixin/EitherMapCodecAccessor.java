@@ -6,10 +6,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(EitherMapCodec.class)
-public interface EitherMapCodecAccessor {
+public interface EitherMapCodecAccessor<F, S> {
     @Accessor
-    MapCodec<?> getFirst();
+    MapCodec<F> getFirst();
 
     @Accessor
-    MapCodec<?> getSecond();
+    MapCodec<S> getSecond();
 }

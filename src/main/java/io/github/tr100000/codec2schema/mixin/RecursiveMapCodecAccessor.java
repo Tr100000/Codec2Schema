@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.function.Supplier;
 
 @Mixin(targets = "com/mojang/serialization/MapCodec$RecursiveMapCodec")
-public interface RecursiveMapCodecAccessor {
+public interface RecursiveMapCodecAccessor<A> {
     @Accessor
-    Supplier<MapCodec<?>> getWrapped();
+    Supplier<MapCodec<A>> getWrapped();
 }

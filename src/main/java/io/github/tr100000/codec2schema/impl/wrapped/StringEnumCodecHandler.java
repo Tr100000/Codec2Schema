@@ -5,29 +5,18 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
+import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 
-public record StringEnumCodecHandler(String[] enumValues) implements CodecHandler<Codec<?>> {
+public class StringEnumCodecHandler implements CodecHandler<CodecWithValuePairs<?>> {
     public static boolean predicate(Codec<?> codec) {
         return codec instanceof WrappedEnumCodec<?> || codec instanceof WrappedStringRepresentableCodec<?>;
     }
 
-    public static StringEnumCodecHandler createHandler(Codec<?> codec) {
-        return switch (codec) {
-            case WrappedEnumCodec<?> wrappedEnumCodec ->
-                    new StringEnumCodecHandler(wrappedEnumCodec.getEnumValues());
-            case WrappedStringRepresentableCodec<?> wrappedStringRepresentableCodec ->
-                    new StringEnumCodecHandler(wrappedStringRepresentableCodec.getEnumValues());
-            default -> throw new IllegalArgumentException("Invalid argument of type " + codec.getClass());
-        };
-    }
-
     @Override
-    public JsonObject toSchema(Codec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
+    public JsonObject toSchema(CodecWithValuePairs<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         JsonArray enumArray = new JsonArray();
-        for (String enumValue : enumValues) {
-            enumArray.add(enumValue);
-        }
+        codec.possibleValues().forEach(value -> enumArray.add(value.str()));
         json.add("enum", enumArray);
         return json;
     }

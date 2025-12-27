@@ -4,27 +4,27 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
-import io.github.tr100000.codec2schema.api.CodecWithValues;
 import io.github.tr100000.codec2schema.api.SchemaContext;
-import io.github.tr100000.codec2schema.api.StringValuePair;
+import io.github.tr100000.codec2schema.api.ValueStringPair;
+import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-public class CodecWithValuesHandler implements CodecHandler<CodecWithValues<?>> {
+public class CodecWithValuesHandler implements CodecHandler<CodecWithValuePairs<?>> {
     public static boolean predicate(Codec<?> codec) {
-        return codec instanceof CodecWithValues<?>;
+        return codec instanceof CodecWithValuePairs<?>;
     }
 
     @Override
-    public JsonObject toSchema(CodecWithValues<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
+    public JsonObject toSchema(CodecWithValuePairs<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         if (codec.getName().isPresent()) {
-            return context.requestDefinition(codec.getName().get(), () -> createFromValues(codec.possibleValues().stream().map(StringValuePair::str)));
+            return context.requestDefinition(codec.getName().get(), () -> createFromValues(codec.possibleValues().stream().map(ValueStringPair::str)));
         }
         else {
-            List<? extends StringValuePair<?>> stringValues = codec.possibleValues();
+            List<? extends ValueStringPair<?>> stringValues = codec.possibleValues();
             if (stringValues != null) {
-                return createFromValues(stringValues.stream().map(StringValuePair::str));
+                return createFromValues(stringValues.stream().map(ValueStringPair::str));
             }
             return context.requestDefinition(codec.original());
         }
@@ -49,7 +49,7 @@ public class CodecWithValuesHandler implements CodecHandler<CodecWithValues<?>> 
     }
 
     @Override
-    public boolean shouldInline(CodecWithValues<?> codec) {
+    public boolean shouldInline(CodecWithValuePairs<?> codec) {
         return codec.getName().isPresent();
     }
 }

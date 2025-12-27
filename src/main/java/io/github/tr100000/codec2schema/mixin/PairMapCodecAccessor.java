@@ -6,10 +6,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PairMapCodec.class)
-public interface PairMapCodecAccessor {
+public interface PairMapCodecAccessor<F, S> {
     @Accessor
-    MapCodec<?> getFirst();
+    MapCodec<F> getFirst();
 
     @Accessor
-    MapCodec<?> getSecond();
+    MapCodec<S> getSecond();
 }

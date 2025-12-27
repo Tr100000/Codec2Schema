@@ -6,10 +6,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(OptionalFieldCodec.class)
-public interface OptionalFieldCodecAccessor {
+public interface OptionalFieldCodecAccessor<A> {
     @Accessor
     String getName();
 
     @Accessor
-    Codec<?> getElementCodec();
+    Codec<A> getElementCodec();
 }

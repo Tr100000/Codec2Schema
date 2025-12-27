@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(RecordCodecBuilder.class)
-public interface RecordCodecBuilderAccessor {
-    @Accessor()
-    MapDecoder<?> getDecoder();
+public interface RecordCodecBuilderAccessor<F> {
+    @Accessor
+    MapDecoder<F> getDecoder();
 }

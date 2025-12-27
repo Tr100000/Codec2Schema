@@ -1,7 +1,7 @@
 package io.github.tr100000.codec2schema.mixin;
 
 import com.mojang.serialization.Codec;
-import io.github.tr100000.codec2schema.api.WrappedCodec;
+import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import net.minecraft.util.EncoderCache;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

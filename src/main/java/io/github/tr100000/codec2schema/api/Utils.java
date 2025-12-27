@@ -3,6 +3,8 @@ package io.github.tr100000.codec2schema.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.OptionalFieldCodec;
+import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
+import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecursiveCodecAccessor;
@@ -16,16 +18,16 @@ public final class Utils {
 
     private static final String RECURSIVE_MAP_CODEC_CLASS_NAME = "class com.mojang.serialization.MapCodec$RecursiveMapCodec";
 
-    public static <T> Optional<List<StringValuePair<T>>> getPossibleValues(Codec<T> codec) {
+    public static <T> Optional<List<ValueStringPair<T>>> getPossibleValues(Codec<T> codec) {
         return switch (codec) {
-            case CodecWithValues<T> codecWithValues -> Optional.of(codecWithValues.possibleValues());
+            case CodecWithValuePairs<T> codecWithValuePairs -> Optional.of(codecWithValuePairs.possibleValues());
             case WrappedCodec<T> wrappedCodec -> getPossibleValues(wrappedCodec.original());
             case Codec.RecursiveCodec<T> recursiveCodec -> getPossibleValues(getRecursiveWrapped(recursiveCodec));
             default -> Optional.empty();
         };
     }
 
-    public static <T> Optional<List<StringValuePair<T>>> getPossibleValues(MapCodec<T> mapCodec) {
+    public static <T> Optional<List<ValueStringPair<T>>> getPossibleValues(MapCodec<T> mapCodec) {
         if (mapCodec instanceof WrappedFieldMapCodec<T> wrappedFieldMapCodec) {
             return getPossibleValues(wrappedFieldMapCodec.original());
         }
@@ -39,7 +41,7 @@ public final class Utils {
                 required.accept(fieldName);
                 yield fieldName;
             }
-            case OptionalFieldCodec<?> optionalFieldCodec -> ((OptionalFieldCodecAccessor)optionalFieldCodec).getName();
+            case OptionalFieldCodec<?> optionalFieldCodec -> ((OptionalFieldCodecAccessor<?>)optionalFieldCodec).getName();
             default -> throw new IllegalArgumentException("Unexpected value: " + codec);
         };
     }

@@ -35,38 +35,13 @@ public record NumberCodecHandler(String type, Optional<Number> min, Optional<Num
     }
 
     public static boolean rangePredicate(Codec<?> codec) {
-        return codec == ExtraCodecs.UNSIGNED_BYTE
-            || codec == ExtraCodecs.NON_NEGATIVE_INT
-            || codec == ExtraCodecs.POSITIVE_INT
-            || codec == ExtraCodecs.NON_NEGATIVE_LONG
-            || codec == ExtraCodecs.POSITIVE_LONG
-            || codec == ExtraCodecs.NON_NEGATIVE_FLOAT
-            || codec == ExtraCodecs.POSITIVE_FLOAT;
+        return codec == ExtraCodecs.UNSIGNED_BYTE;
     }
 
     public static NumberCodecHandler createRangedHandler(Codec<?> codec) {
         if (codec == ExtraCodecs.UNSIGNED_BYTE) {
             return new NumberCodecHandler("integer", Optional.empty(), Optional.of(255L));
-        }
-        else if (codec == ExtraCodecs.NON_NEGATIVE_INT) {
-            return new NumberCodecHandler("integer", 0, Integer.MAX_VALUE);
-        }
-        else if (codec == ExtraCodecs.POSITIVE_INT) {
-            return new NumberCodecHandler("integer", 1, Integer.MAX_VALUE);
-        }
-        else if (codec == ExtraCodecs.NON_NEGATIVE_LONG) {
-            return new NumberCodecHandler("integer", 0, Long.MAX_VALUE);
-        }
-        else if (codec == ExtraCodecs.POSITIVE_LONG) {
-            return new NumberCodecHandler("integer", 1, Long.MAX_VALUE);
-        }
-        else if (codec == ExtraCodecs.NON_NEGATIVE_FLOAT) {
-            return new NumberCodecHandler("number", 0.0F, Float.MAX_VALUE);
-        }
-        else if (codec == ExtraCodecs.POSITIVE_FLOAT) {
-            return new NumberCodecHandler("number", 1.0F, Float.MAX_VALUE);
-        }
-        else {
+        } else {
             return null;
         }
     }

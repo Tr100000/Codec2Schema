@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
-import io.github.tr100000.codec2schema.api.WrappedCodec;
+import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 
 public record WrappedCodecHandler(WrappedCodec<?> codec) implements CodecHandler<WrappedCodec<?>> {
     public static boolean predicate(Codec<?> codec) {

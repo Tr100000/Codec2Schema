@@ -3,6 +3,7 @@ classTweaker v1 named
 accessible class net/minecraft/core/component/DataComponentPatch$PatchKey
 accessible class net/minecraft/network/chat/ComponentSerialization$FuzzyCodec
 accessible class net/minecraft/network/chat/ComponentSerialization$StrictEither
+accessible class net/minecraft/client/gui/font/FontManager$FontDefinitionFile
 
 accessible field net/minecraft/resources/RegistryFixedCodec registryKey Lnet/minecraft/resources/ResourceKey;
 accessible field net/minecraft/resources/RegistryFileCodec registryKey Lnet/minecraft/resources/ResourceKey;
@@ -13,3 +14,4 @@ accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither 
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typed Lcom/mojang/serialization/MapCodec;
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither fuzzy Lcom/mojang/serialization/MapCodec;
 accessible field net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement TEMPLATE_CODEC Lcom/mojang/serialization/Codec;
+accessible field net/minecraft/client/PeriodicNotificationManager CODEC Lcom/mojang/serialization/Codec;
