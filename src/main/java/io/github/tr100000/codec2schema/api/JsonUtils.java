@@ -29,7 +29,11 @@ public final class JsonUtils {
         }
     }
 
-    public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject schema) {
+    public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject thenSchema) {
+        return schemaIfPropertyEquals(propertyName, value, thenSchema, null);
+    }
+
+    public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject thenSchema, JsonObject elseSchema) {
         JsonObject json = new JsonObject();
 
         JsonObject ifJson = new JsonObject();
@@ -40,7 +44,8 @@ public final class JsonUtils {
         ifJson.add("properties", properties);
 
         json.add("if", ifJson);
-        json.add("then", schema);
+        json.add("then", thenSchema);
+        if (elseSchema != null) json.add("else", elseSchema);
         return json;
     }
 

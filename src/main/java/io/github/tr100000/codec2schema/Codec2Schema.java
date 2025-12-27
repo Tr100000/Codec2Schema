@@ -2,8 +2,10 @@ package io.github.tr100000.codec2schema;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.tr100000.codec2schema.api.CodecHandlerEarlyRegistrationEntrypoint;
 import io.github.tr100000.codec2schema.api.CodecHandlerRegistrationEntrypoint;
 import io.github.tr100000.codec2schema.api.CodecHandlerRegistry;
+import io.github.tr100000.codec2schema.api.MapCodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
 import io.github.tr100000.codec2schema.api.SchemaGenerationEntrypoint;
 import io.github.tr100000.codec2schema.impl.DispatchedMapCodecHandler;
@@ -19,7 +21,14 @@ import io.github.tr100000.codec2schema.impl.RegistryFixedCodecHandler;
 import io.github.tr100000.codec2schema.impl.StrictUnboundedMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.UnboundedMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.XorCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.ComponentSerializationCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.EitherMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.MapCodecCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.OptionalFieldCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.PairMapCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.SimpleMapCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.WrappedUnitMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.specific.DataComponentPatchCodecHandler;
 import io.github.tr100000.codec2schema.impl.specific.DataComponentTypeCodecHandler;
 import io.github.tr100000.codec2schema.impl.specific.DataComponentValueMapCodecHandler;
@@ -50,7 +59,7 @@ public class Codec2Schema implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        FabricLoader.getInstance().invokeEntrypoints("codec2schema:register_early", CodecHandlerRegistrationEntrypoint.class, CodecHandlerRegistrationEntrypoint::register);
+        FabricLoader.getInstance().invokeEntrypoints("codec2schema:register_early", CodecHandlerEarlyRegistrationEntrypoint.class, CodecHandlerEarlyRegistrationEntrypoint::earlyRegister);
 
         CodecHandlerRegistry.register(DataComponentPatchCodecHandler::predicate, DataComponentPatchCodecHandler::new);
         CodecHandlerRegistry.register(DataComponentTypeCodecHandler::predicate, DataComponentTypeCodecHandler::new);
@@ -84,6 +93,15 @@ public class Codec2Schema implements ModInitializer {
 
         CodecHandlerRegistry.register(RecursiveCodecHandler::predicate, RecursiveCodecHandler::new);
         CodecHandlerRegistry.register(WrappedCodecHandler::predicate, WrappedCodecHandler::new);
+
+        MapCodecHandlerRegistry.register(ComponentSerializationCodecHandler::predicate, ComponentSerializationCodecHandler::new);
+        MapCodecHandlerRegistry.register(WrappedUnitMapCodecHandler::predicate, WrappedUnitMapCodecHandler::new);
+
+        MapCodecHandlerRegistry.register(WrappedFieldMapCodecHandler::predicate, WrappedFieldMapCodecHandler::new);
+        MapCodecHandlerRegistry.register(OptionalFieldCodecHandler::predicate, OptionalFieldCodecHandler::new);
+        MapCodecHandlerRegistry.register(SimpleMapCodecHandler::predicate, SimpleMapCodecHandler::create);
+        MapCodecHandlerRegistry.register(EitherMapCodecHandler::predicate, EitherMapCodecHandler::new);
+        MapCodecHandlerRegistry.register(PairMapCodecHandler::predicate, PairMapCodecHandler::new);
 
         FabricLoader.getInstance().invokeEntrypoints("codec2schema:register", CodecHandlerRegistrationEntrypoint.class, CodecHandlerRegistrationEntrypoint::register);
 

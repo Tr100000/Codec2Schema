@@ -16,14 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": ["io.github.tr100000.codec2schema.Codec2Schema"],
+    "codec2schema:register": ["io.github.tr100000.codec2schema.compat.fabric.FabricCompat"],
     "codec2schema:generate": ["io.github.tr100000.codec2schema.Codec2SchemaGeneration"]
 	},
-	"mixins": [
-		"codec2schema.mixins.json"
-	],
+	"mixins": ["codec2schema.mixins.json"],
   "accessWidener": "codec2schema.classtweaker",
 	"depends": {
-		"fabricloader": ">=0.18.3",
+		"fabricloader": ">=0.18",
 		"minecraft": "*",
 		"java": ">=21"
 	}

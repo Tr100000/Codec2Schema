@@ -1,36 +1,29 @@
 package io.github.tr100000.codec2schema.impl.map;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapDecoder;
-import com.mojang.serialization.codecs.EitherMapCodec;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
-import com.mojang.serialization.codecs.OptionalFieldCodec;
 import com.mojang.serialization.codecs.PairMapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.mojang.serialization.codecs.SimpleMapCodec;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.JsonUtils;
+import io.github.tr100000.codec2schema.api.MapCodecHandler;
+import io.github.tr100000.codec2schema.api.MapCodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import io.github.tr100000.codec2schema.api.Utils;
 import io.github.tr100000.codec2schema.api.ValueStringPair;
 import io.github.tr100000.codec2schema.api.codec.WrappedMapCodec;
-import io.github.tr100000.codec2schema.mixin.EitherMapCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.KeyDispatchCodecAccessor;
-import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.PairMapCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecordCodecBuilderAccessor;
-import net.minecraft.network.chat.ComponentSerialization;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec<?>> {
     public static boolean predicate(Codec<?> codec) {
@@ -51,72 +44,24 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
 
     public static JsonObject toSchema(MapCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         codec = actually(codec);
-        if (codec instanceof WrappedMapCodec<?> wrappedMapCodec && wrappedMapCodec.isUnitCodec()) {
-            return new JsonObject();
-        }
-        else if (codec instanceof SimpleMapCodec<?, ?> simpleMapCodec) {
-            return simpleMapCodecSchema(simpleMapCodec);
-        }
-        else if (codec instanceof WrappedRecordCodec<?> wrappedRecordCodec) {
+        if (codec instanceof WrappedRecordCodec<?> wrappedRecordCodec) {
             return recordCodecSchema(wrappedRecordCodec, context, definitionContext);
         }
         else if (codec instanceof KeyDispatchCodec<?, ?> keyDispatchCodec) {
             return keyDispatchCodecSchema(keyDispatchCodec, context);
         }
-        else if (codec instanceof EitherMapCodec<?, ?> eitherMapCodec) {
-            return eitherMapCodecSchema(eitherMapCodec, context);
-        }
-        else if (codec instanceof PairMapCodec<?, ?> pairMapCodec) {
-            return pairMapCodecSchema(pairMapCodec, context);
-        }
         else if (codec instanceof WrappedDispatchOptionalValueMapCodec<?,?> wrappedDispatchOptionalValueMapCodec) {
             return wrappedDispatchOptionalValueMapCodecField(wrappedDispatchOptionalValueMapCodec, context);
-        }
-        else if (codec instanceof WrappedFieldMapCodec<?> wrappedFieldMapCodec) {
-            return singlePropertySchema(wrappedFieldMapCodec.fieldName(), wrappedFieldMapCodec.original(), true, context);
-        }
-        else if (codec instanceof OptionalFieldCodec<?> optionalFieldCodec) {
-            OptionalFieldCodecAccessor<?> accessor = (OptionalFieldCodecAccessor<?>)optionalFieldCodec;
-            return singlePropertySchema(accessor.getName(), accessor.getElementCodec(), false, context);
-        }
-        else if (ComponentSerializationCodecUtils.canHandle(codec)) {
-            return ComponentSerializationCodecUtils.toSchema(codec, context);
         }
         else if (Utils.isRecursiveMapCodec(codec)) {
             JsonObject json = context.createRef(definitionContext.definitionStack().get(1));
             context.cancel(definitionContext.name().orElseThrow());
             return json;
         }
-
-        throw new IllegalArgumentException(String.format("No map codec handler for %s", codec.getClass()));
-    }
-
-    private static JsonObject singlePropertySchema(String fieldName, Codec<?> codec, boolean isRequired, SchemaContext context) {
-        JsonObject json = new JsonObject();
-        JsonObject properties = new JsonObject();
-        properties.add(fieldName, context.requestDefinition(codec));
-        json.add("properties", properties);
-        if (isRequired) {
-            JsonArray required = new JsonArray();
-            required.add(fieldName);
-            json.add("required", required);
+        else {
+            MapCodecHandler<MapCodec<?>> handler = MapCodecHandlerRegistry.getHandlerOrThrow(codec);
+            return handler.toSchema(codec, context, definitionContext);
         }
-        return json;
-    }
-
-    private static JsonObject simpleMapCodecSchema(SimpleMapCodec<?, ?> codec) {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", "object");
-        json.add("propertyNames", createEnumFromKeys(codec.keys(JsonOps.INSTANCE)));
-        return json;
-    }
-
-    private static JsonObject createEnumFromKeys(Stream<JsonElement> validKeys) {
-        JsonObject json = new JsonObject();
-        JsonArray enumArray = new JsonArray();
-        validKeys.forEachOrdered(enumArray::add);
-        json.add("enum", enumArray);
-        return json;
     }
 
     private static JsonObject recordCodecSchema(WrappedRecordCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
@@ -141,24 +86,6 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
 
     private static void handleField(JsonObject json, JsonObject properties, JsonArray required, MapCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         switch (codec) {
-            case WrappedFieldMapCodec<?> wrappedFieldCodec -> {
-                properties.add(wrappedFieldCodec.fieldName(), context.requestDefinition(wrappedFieldCodec.original()));
-                required.add(wrappedFieldCodec.fieldName());
-            }
-            case OptionalFieldCodec<?> optionalFieldCodec -> {
-                OptionalFieldCodecAccessor<?> accessor = (OptionalFieldCodecAccessor<?>)optionalFieldCodec;
-                properties.add(accessor.getName(), context.requestDefinition(accessor.getElementCodec()));
-            }
-            case EitherMapCodec<?, ?> eitherMapCodec -> {
-                JsonArray anyOf = new JsonArray();
-                EitherMapCodecAccessor<?, ?> accessor = (EitherMapCodecAccessor<?, ?>)(Object)eitherMapCodec;
-                anyOf.add(context.requestDefinition(accessor.getFirst().codec()));
-                anyOf.add(context.requestDefinition(accessor.getSecond().codec()));
-
-                JsonObject entry = new JsonObject();
-                entry.add("anyOf", anyOf);
-                JsonUtils.getOrCreateArray(json, "allOf").add(entry);
-            }
             case WrappedRecordCodec<?> wrappedRecordCodec -> {
                 JsonUtils.getOrCreateArray(json, "allOf").add(context.requestDefinition(wrappedRecordCodec.codec()));
             }
@@ -168,21 +95,13 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
             case WrappedDispatchOptionalValueMapCodec<?, ?> wrappedDispatchOptionalValueMapCodec -> {
                 wrappedDispatchOptionalValueMapCodecSchema(json, properties, required, wrappedDispatchOptionalValueMapCodec, context);
             }
-            case ComponentSerialization.FuzzyCodec<?> fuzzyCodec -> {
-                ComponentSerializationCodecUtils.fuzzyCodecSchema(json, fuzzyCodec, context);
-            }
-            case ComponentSerialization.StrictEither<?> strictEither -> {
-                ComponentSerializationCodecUtils.strictEitherSchema(json, strictEither, context);
-            }
-            case WrappedMapCodec<?> wrappedMapCodec when wrappedMapCodec.isUnitCodec() -> {
-                // do nothing
-            }
             default -> {
                 if (Utils.isRecursiveMapCodec(codec)) {
                     JsonUtils.getOrCreateArray(json, "allOf").add(context.createRef(definitionContext.name().orElseThrow()));
                 }
                 else {
-                    throw new IllegalArgumentException(codec.getClass().toString());
+                    MapCodecHandler<MapCodec<?>> handler = MapCodecHandlerRegistry.getHandlerOrThrow(codec);
+                    handler.field(json, properties, required, codec, context, definitionContext);
                 }
             }
         }
@@ -201,6 +120,7 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
     private static <K, V> void keyDispatchField(JsonObject json, JsonObject properties, JsonArray required, KeyDispatchCodec<K, V> codec, SchemaContext context) {
         MapCodec<K> keyCodec = ((KeyDispatchCodecAccessor<K, V>)codec).getKeyCodec();
         String typeFieldName = Utils.getFieldNameForDispatch(actually(keyCodec), required::add);
+        required.add(typeFieldName);
 
         if (context.debugMode) Codec2Schema.LOGGER.info("Starting dispatch: {}", typeFieldName);
 
@@ -247,6 +167,7 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
 
     private static <K, V> void wrappedDispatchOptionalValueMapCodecSchema(JsonObject json, JsonObject properties, JsonArray required, WrappedDispatchOptionalValueMapCodec<K, V> codec, SchemaContext context) {
         String typeKey = codec.typeKey();
+        required.add(typeKey);
         String dispatchKey = codec.dispatchKey();
         if (context.debugMode) Codec2Schema.LOGGER.info("Starting dispatch: {} -> {}", typeKey, dispatchKey);
 
@@ -277,20 +198,6 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
         }
 
         if (context.debugMode) Codec2Schema.LOGGER.info("Finished dispatch: {} -> {}", typeKey, dispatchKey);
-
-        required.add(typeKey);
-    }
-
-    private static JsonObject eitherMapCodecSchema(EitherMapCodec<?, ?> codec, SchemaContext context) {
-        JsonObject json = new JsonObject();
-
-        EitherMapCodecAccessor<?, ?> accessor = (EitherMapCodecAccessor<?, ?>)(Object)codec;
-        JsonArray anyOf = new JsonArray();
-        anyOf.add(context.requestDefinition(accessor.getFirst().codec()));
-        anyOf.add(context.requestDefinition(accessor.getSecond().codec()));
-
-        json.add("anyOf", anyOf);
-        return json;
     }
 
     private static JsonObject pairMapCodecSchema(PairMapCodec<?, ?> codec, SchemaContext context) {

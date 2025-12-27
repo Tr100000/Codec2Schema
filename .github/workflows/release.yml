@@ -17,7 +17,7 @@ jobs:
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build and publish
+      - name: build
         run: ./gradlew build
       - name: publish
         env:

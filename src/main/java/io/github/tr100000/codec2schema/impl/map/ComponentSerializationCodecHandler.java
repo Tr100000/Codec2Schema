@@ -4,35 +4,33 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.MapCodec;
 import io.github.tr100000.codec2schema.api.JsonUtils;
+import io.github.tr100000.codec2schema.api.MapCodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import net.minecraft.network.chat.ComponentSerialization;
 
-public final class ComponentSerializationCodecUtils {
-    private ComponentSerializationCodecUtils() {}
-
-    public static boolean canHandle(MapCodec<?> codec) {
+public class ComponentSerializationCodecHandler implements MapCodecHandler<MapCodec<?>> {
+    public static boolean predicate(MapCodec<?> codec) {
         return codec instanceof ComponentSerialization.FuzzyCodec<?> || codec instanceof ComponentSerialization.StrictEither<?>;
     }
 
-    public static JsonObject toSchema(MapCodec<?> codec, SchemaContext context) {
+    @Override
+    public void field(JsonObject json, JsonObject properties, JsonArray required, MapCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         if (codec instanceof ComponentSerialization.FuzzyCodec<?> fuzzyCodec) {
-            return fuzzyCodecSchema(new JsonObject(), fuzzyCodec, context);
+            fuzzyCodecSchema(json, fuzzyCodec, context);
         }
         else if (codec instanceof ComponentSerialization.StrictEither<?> strictEither) {
-            return strictEitherSchema(new JsonObject(), strictEither, context);
+            strictEitherSchema(json, properties, strictEither, context);
         }
         else throw new IllegalArgumentException(); // this will never happen
     }
 
-    public static JsonObject fuzzyCodecSchema(JsonObject json, ComponentSerialization.FuzzyCodec<?> codec, SchemaContext context) {
+    private void fuzzyCodecSchema(JsonObject json, ComponentSerialization.FuzzyCodec<?> codec, SchemaContext context) {
         JsonArray anyOf = JsonUtils.getOrCreateArray(json, "anyOf");
         codec.codecs.forEach(c -> anyOf.add(context.requestDefinition(c.codec())));
-        return json;
     }
 
-    public static JsonObject strictEitherSchema(JsonObject json, ComponentSerialization.StrictEither<?> codec, SchemaContext context) {
+    private void strictEitherSchema(JsonObject json, JsonObject properties, ComponentSerialization.StrictEither<?> codec, SchemaContext context) {
         JsonObject ifJson = new JsonObject();
-        JsonObject properties = new JsonObject();
         properties.add(codec.typeFieldName, new JsonObject());
         ifJson.add("properties", properties);
 
@@ -42,6 +40,5 @@ public final class ComponentSerializationCodecUtils {
         entry.add("then", context.requestDefinition(codec.typed.codec()));
         entry.add("else", context.requestDefinition(codec.fuzzy.codec()));
         allOf.add(entry);
-        return json;
     }
 }
