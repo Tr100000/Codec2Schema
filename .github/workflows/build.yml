@@ -17,7 +17,7 @@ jobs:
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: build
-        run: ./gradlew build modrinthSyncBody
+        run: ./gradlew build
       - name: sync modrinth body
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
