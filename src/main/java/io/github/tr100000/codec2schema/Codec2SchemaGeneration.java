@@ -117,7 +117,7 @@ public class Codec2SchemaGeneration implements SchemaGenerationEntrypoint {
 //            exportResourceCodec(exporter, , "particles.json");
             exportResourceCodec(exporter, PostChainConfig.CODEC, "post_effect.json");
             exportResourceCodec(exporter, WaypointStyle.CODEC, "waypoint_style.json");
-            exportResourceCodec(exporter, PeriodicNotificationManager.CODEC, "regional_compliance.json");
+            exportResourceCodec(exporter, PeriodicNotificationManager.CODEC, "regional_compliancies.json");
         }
     }
 

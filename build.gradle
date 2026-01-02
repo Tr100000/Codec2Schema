@@ -2,9 +2,11 @@ plugins {
     id "net.fabricmc.fabric-loom-remap" version "${loom_version}"
     id "com.diffplug.spotless" version "8.+"
     id "com.modrinth.minotaur" version "2.+"
+    id "maven-publish"
 }
 
-version = "$project.version+${project.minecraft_version}"
+version = "$project.mod_version+${project.minecraft_version}"
+group = project.maven_group
 
 base {
     archivesName = project.archives_base_name
@@ -31,8 +33,8 @@ apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scrip
 
 modrinth {
     projectId = "codec2schema"
-    versionNumber = project.version
-    versionName = project.version
+    versionNumber = project.mod_version
+    versionName = project.mod_version
     uploadFile = remapJar
     additionalFiles = [remapSourcesJar]
     changelog = rootProject.file("CHANGELOG.md").text
@@ -62,7 +64,7 @@ spotless {
 }
 
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", project.mod_version
 
     filesMatching("fabric.mod.json") {
         expand "version": inputs.properties.version
@@ -91,5 +93,14 @@ jar {
 
     from("LICENSE") {
         rename { "${it}_${inputs.properties.archivesName}" }
+    }
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
     }
 }

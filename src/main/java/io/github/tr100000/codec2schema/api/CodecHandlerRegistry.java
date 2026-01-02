@@ -35,7 +35,7 @@ public final class CodecHandlerRegistry {
                     if (handler != null) return handler;
                 }
                 catch (Exception e) {
-                    Codec2Schema.LOGGER.warn("Error while attempting to handle codec of type {} with entry {}", codec.getClass(), entry, e);
+                    Codec2Schema.LOGGER.warn("Error while attempting to retrieve codec handler for {} with entry {}", codec.getClass(), entry, e);
                 }
             }
         }

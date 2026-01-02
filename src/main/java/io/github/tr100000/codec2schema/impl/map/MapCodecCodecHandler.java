@@ -7,7 +7,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapDecoder;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
-import com.mojang.serialization.codecs.PairMapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.api.CodecHandler;
@@ -19,7 +18,6 @@ import io.github.tr100000.codec2schema.api.Utils;
 import io.github.tr100000.codec2schema.api.ValueStringPair;
 import io.github.tr100000.codec2schema.api.codec.WrappedMapCodec;
 import io.github.tr100000.codec2schema.mixin.KeyDispatchCodecAccessor;
-import io.github.tr100000.codec2schema.mixin.PairMapCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecordCodecBuilderAccessor;
 
 import java.util.List;
@@ -198,17 +196,5 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
         }
 
         if (context.debugMode) Codec2Schema.LOGGER.info("Finished dispatch: {} -> {}", typeKey, dispatchKey);
-    }
-
-    private static JsonObject pairMapCodecSchema(PairMapCodec<?, ?> codec, SchemaContext context) {
-        JsonObject json = new JsonObject();
-
-        PairMapCodecAccessor<?, ?> accessor = (PairMapCodecAccessor<?, ?>)(Object)codec;
-        JsonArray allOf = new JsonArray();
-        allOf.add(context.requestDefinition(accessor.getFirst().codec()));
-        allOf.add(context.requestDefinition(accessor.getSecond().codec()));
-
-        json.add("allOf", allOf);
-        return json;
     }
 }
