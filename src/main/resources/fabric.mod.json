@@ -23,7 +23,7 @@
   "accessWidener": "codec2schema.classtweaker",
 	"depends": {
 		"fabricloader": ">=0.18",
-		"minecraft": "*",
+		"minecraft": "~1.21.11",
 		"java": ">=21"
 	}
 }

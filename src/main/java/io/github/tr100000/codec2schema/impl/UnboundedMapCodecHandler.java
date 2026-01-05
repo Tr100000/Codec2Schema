@@ -13,13 +13,16 @@ public record UnboundedMapCodecHandler(UnboundedMapCodec<?, ?> codec) implements
 
     @Override
     public JsonObject toSchema(UnboundedMapCodec<?, ?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
+        return toSchema(codec.keyCodec(), codec.elementCodec(), context);
+    }
+
+    public static JsonObject toSchema(Codec<?> keyCodec, Codec<?> elementCodec, SchemaContext context) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "object");
-        JsonObject propertyNames = new JsonObject();
-        propertyNames.addProperty("type", "string");
-        json.add("propertyNames", propertyNames);
-        JsonObject additionalProperties = context.requestDefinition(codec.elementCodec());
+        json.add("propertyNames", context.requestDefinition(keyCodec));
+        JsonObject additionalProperties = context.requestDefinition(elementCodec);
         json.add("additionalProperties", additionalProperties);
+        json.addProperty("_info", "UNBOUNDED MAP CODEC");
         return json;
     }
 }
