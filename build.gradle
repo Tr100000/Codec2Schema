@@ -1,5 +1,5 @@
 plugins {
-    id "net.fabricmc.fabric-loom-remap" version "${loom_version}"
+    id "net.fabricmc.fabric-loom" version "${loom_version}"
     id "com.diffplug.spotless" version "8.+"
     id "com.modrinth.minotaur" version "2.+"
     id "maven-publish"
@@ -24,9 +24,8 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 
 apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scripts/devlogin.gradle"
@@ -35,8 +34,8 @@ modrinth {
     projectId = "codec2schema"
     versionNumber = project.version
     versionName = project.version
-    uploadFile = remapJar
-    additionalFiles = [remapSourcesJar]
+    uploadFile = jar
+//    additionalFiles = [sourcesJar]
     changelog = rootProject.file("CHANGELOG.md").text
     syncBodyFrom = rootProject.file("README.md").text
 }
@@ -73,7 +72,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release = 21
+    it.options.release = 25
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
