@@ -46,6 +46,7 @@ import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,10 @@ public class Codec2Schema implements ModInitializer {
         MapCodecHandlerRegistry.register(PairMapCodecHandler::predicate, PairMapCodecHandler::new);
 
         FabricLoader.getInstance().invokeEntrypoints("codec2schema:register", CodecHandlerRegistrationEntrypoint.class, CodecHandlerRegistrationEntrypoint::register);
+    }
 
+    @ApiStatus.Internal
+    public static void generateSchemas() {
         try {
             FileUtils.deleteDirectory(EXPORT_ROOT_DIR.toFile());
         }

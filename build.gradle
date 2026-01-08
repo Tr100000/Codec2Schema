@@ -30,18 +30,6 @@ dependencies {
 
 apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scripts/devlogin.gradle"
 
-modrinth {
-    projectId = "codec2schema"
-    versionNumber = project.version
-    versionName = project.version
-    uploadFile = jar
-//    additionalFiles = [sourcesJar]
-    changelog = rootProject.file("CHANGELOG.md").text
-    syncBodyFrom = rootProject.file("README.md").text
-}
-
-tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
-
 loom {
     accessWidenerPath = file("src/main/resources/codec2schema.classtweaker")
 }
@@ -94,6 +82,18 @@ jar {
         rename { "${it}_${inputs.properties.archivesName}" }
     }
 }
+
+modrinth {
+    projectId = "codec2schema"
+    versionNumber = project.version
+    versionName = project.version
+    uploadFile = jar
+    additionalFiles = [sourcesJar]
+    changelog = rootProject.file("CHANGELOG.md").text
+    syncBodyFrom = rootProject.file("README.md").text
+}
+
+tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 
 publishing {
     publications {

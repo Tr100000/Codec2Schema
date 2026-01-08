@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_25",
   "plugin": "io.github.tr100000.codec2schema.mixin.Codec2SchemaMixinPlugin",
   "mixins": [
+    "BuiltInRegistriesMixin",
     "CodecMixin",
     "EitherMapCodecAccessor",
     "EncoderCacheMixin",

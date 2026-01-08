@@ -22,7 +22,6 @@ public record UnboundedMapCodecHandler(UnboundedMapCodec<?, ?> codec) implements
         json.add("propertyNames", context.requestDefinition(keyCodec));
         JsonObject additionalProperties = context.requestDefinition(elementCodec);
         json.add("additionalProperties", additionalProperties);
-        json.addProperty("_info", "UNBOUNDED MAP CODEC");
         return json;
     }
 }
