@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3+1.21.11] - 2026-01-08
+
+### Changed
+- Messed with the build script again
+- Schema generation is now performed after registry bootstrapping
+
+### Fixed
+- Removed some debugging stuff that was left by mistake
+
 ## [0.1.2+1.21.11] - 2026-01-05
 
 ### Added
