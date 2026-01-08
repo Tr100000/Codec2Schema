@@ -1,10 +1,6 @@
-### Added
-- Added support for `FailSoftMapCodec` from the Fabric Dimensions API
-
 ### Changed
-- Schemas generated on a previous run are now deleted before generation
-  - This prevents old schemas from persisting 
+- Messed with the build script again
+- Schema generation is now performed after registry bootstrapping 
 
 ### Fixed
-- The handler for `UnboundedMapCodec` now properly takes into account the key codec
-- Gradle source and target compatibility is now correctly set to Java 21
+- Removed some debugging stuff that was left by mistake
