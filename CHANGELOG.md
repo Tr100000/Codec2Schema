@@ -1,3 +1,5 @@
+**Updated to 26.1-snapshot-2**
+
 ### Changed
 - Messed with the build script again
 - Schema generation is now performed after registry bootstrapping 
