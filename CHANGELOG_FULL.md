@@ -1,9 +1,10 @@
 # Changelog
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.1.3+26.1-snapshot-3]
 
-## [0.1.3+26.1-snapshot-2] - 2026-01-08
+**Updated to 26.1-snapshot-3**
+
+## [0.1.3+26.1-snapshot-2]
 
 **Updated to 26.1-snapshot-2**
 
@@ -14,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Removed some debugging stuff that was left by mistake
 
-## [0.1.2+26.1-snapshot-1] - 2026-01-05
+## [0.1.2+26.1-snapshot-1]
 
 **Updated to 26.1-snapshot-1**
 
@@ -29,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The handler for `UnboundedMapCodec` now properly takes into account the key codec
 
-## [0.1.1+1.21.11] - 2026-01-02
+## [0.1.1+1.21.11]
 
 ### Fixed
 
@@ -44,6 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slightly improve some warnings
 - Mess with the build script
 
-## [0.1.0+1.21.11] - 2025-12-27
+## [0.1.0+1.21.11]
 
 Initial release
