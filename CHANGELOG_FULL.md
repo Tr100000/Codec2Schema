@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4+1.21.11]
+
+### Fixed
+- Fixed erroneous entries in required fields in some cases
+- Fixed crash without Fabric API (hopefully)
+
 ## [0.1.3+1.21.11]
 
 ### Changed

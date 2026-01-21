@@ -58,10 +58,12 @@ public class Codec2Schema implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("Codec2Schema");
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static final Path EXPORT_ROOT_DIR = FabricLoader.getInstance().getGameDir().resolve("codec2schema");
+    public static final Path EXPORT_ROOT_DIR = FabricLoader.getInstance().getGameDir().resolve(MODID);
 
     @Override
-    public void onInitialize() {
+    public void onInitialize() {}
+
+    public static void registerHandlers() {
         FabricLoader.getInstance().invokeEntrypoints("codec2schema:register_early", CodecHandlerEarlyRegistrationEntrypoint.class, CodecHandlerEarlyRegistrationEntrypoint::earlyRegister);
 
         CodecHandlerRegistry.register(DataComponentPatchCodecHandler::predicate, DataComponentPatchCodecHandler::new);
@@ -111,6 +113,8 @@ public class Codec2Schema implements ModInitializer {
 
     @ApiStatus.Internal
     public static void generateSchemas() {
+        registerHandlers();
+
         try {
             FileUtils.deleteDirectory(EXPORT_ROOT_DIR.toFile());
         }
@@ -118,6 +122,7 @@ public class Codec2Schema implements ModInitializer {
             LOGGER.warn("Failed to delete previously generated schemas", e);
         }
 
+        LOGGER.info("Starting schema generation");
         long startTimeMillis = System.currentTimeMillis();
         FabricLoader.getInstance().invokeEntrypoints("codec2schema:generate", SchemaGenerationEntrypoint.class, entrypoint -> {
             SchemaExporter exporter = new SchemaExporter();
