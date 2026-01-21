@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4+26.1-snapshot-4]
+
+**Updated to 26.1-snapshot-4**
+
+### Fixed
+- Fixed erroneous entries in required fields in some cases
+- Fixed crash without Fabric API (hopefully)
+
 ## [0.1.3+26.1-snapshot-3]
 
 **Updated to 26.1-snapshot-3**
