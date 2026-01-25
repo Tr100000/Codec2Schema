@@ -31,6 +31,15 @@ dependencies {
 apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scripts/devlogin.gradle"
 
 loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        codec2schema {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+
     accessWidenerPath = file("src/main/resources/codec2schema.classtweaker")
 }
 

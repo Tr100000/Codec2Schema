@@ -1,19 +1,9 @@
 package io.github.tr100000.codec2schema;
 
 import com.mojang.serialization.Codec;
+import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
-import io.github.tr100000.codec2schema.api.SchemaGenerationEntrypoint;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.client.PeriodicNotificationManager;
-import net.minecraft.client.gui.font.FontManager;
-import net.minecraft.client.renderer.PostChainConfig;
-import net.minecraft.client.renderer.block.model.BlockModelDefinition;
-import net.minecraft.client.renderer.item.ClientItem;
-import net.minecraft.client.renderer.texture.atlas.SpriteSources;
-import net.minecraft.client.resources.WaypointStyle;
-import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.ChatType;
@@ -59,9 +49,9 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.timeline.Timeline;
 
-public class Codec2SchemaGeneration implements SchemaGenerationEntrypoint {
+public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
     @Override
-    public void generate(SchemaExporter exporter) {
+    public void generateSchemas(SchemaExporter exporter) {
         // https://minecraft.wiki/w/Data_pack#Folder_structure
         exportDataCodec(exporter, TagFile.CODEC, "tags.json");
         exportDataCodec(exporter, Advancement.CODEC, "advancement.json");
@@ -108,21 +98,6 @@ public class Codec2SchemaGeneration implements SchemaGenerationEntrypoint {
         exportDataWorldgenCodec(exporter, WorldPreset.DIRECT_CODEC, "world_preset.json");
         exportDataWorldgenCodec(exporter, FlatLevelGeneratorPreset.DIRECT_CODEC, "flat_level_generator_preset.json");
         exportDataWorldgenCodec(exporter, MultiNoiseBiomeSourceParameterList.DIRECT_CODEC, "multi_noise_biome_source_parameter_list.json");
-
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            // https://minecraft.wiki/w/Resource_pack#Directory_structure
-            exportResourceCodec(exporter, SpriteSources.FILE_CODEC, "atlases.json");
-            exportResourceCodec(exporter, BlockModelDefinition.CODEC, "blockstates.json");
-            exportResourceCodec(exporter, EquipmentClientInfo.CODEC, "equipment.json");
-            exportResourceCodec(exporter, FontManager.FontDefinitionFile.CODEC, "font.json");
-            exportResourceCodec(exporter, ClientItem.CODEC, "items.json");
-//            exportResourceCodec(exporter, , "lang.json");
-//            exportResourceCodec(exporter, , "models.json");
-//            exportResourceCodec(exporter, , "particles.json");
-            exportResourceCodec(exporter, PostChainConfig.CODEC, "post_effect.json");
-            exportResourceCodec(exporter, WaypointStyle.CODEC, "waypoint_style.json");
-            exportResourceCodec(exporter, PeriodicNotificationManager.CODEC, "regional_compliancies.json");
-        }
     }
 
     private void exportDataCodec(SchemaExporter exporter, Codec<?> codec, String path) {
@@ -131,9 +106,5 @@ public class Codec2SchemaGeneration implements SchemaGenerationEntrypoint {
 
     private void exportDataWorldgenCodec(SchemaExporter exporter, Codec<?> codec, String path) {
         exporter.accept(codec, "data", "worldgen", path);
-    }
-
-    private void exportResourceCodec(SchemaExporter exporter, Codec<?> codec, String path) {
-        exporter.accept(codec, "resources", path);
     }
 }
