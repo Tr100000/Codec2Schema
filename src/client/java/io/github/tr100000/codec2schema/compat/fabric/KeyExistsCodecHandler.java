@@ -6,7 +6,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.MapCodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
-import io.github.tr100000.codec2schema.mixin.compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor;
+import io.github.tr100000.codec2schema.mixin.client.compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor;
 
 // This is only used once
 public class KeyExistsCodecHandler implements MapCodecHandler<MapCodec<?>> {

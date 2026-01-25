@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BuiltInRegistriesMixin {
     @Inject(method = "bootStrap", at = @At("TAIL"))
     private static void bootstrap(CallbackInfo ci) {
-        Codec2Schema.generateSchemas();
+        Codec2Schema.afterBootstrap();
     }
 }

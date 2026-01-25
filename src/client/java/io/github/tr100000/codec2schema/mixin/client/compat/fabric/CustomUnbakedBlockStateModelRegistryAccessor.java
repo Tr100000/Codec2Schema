@@ -1,4 +1,4 @@
-package io.github.tr100000.codec2schema.mixin.compat.fabric;
+package io.github.tr100000.codec2schema.mixin.client.compat.fabric;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;

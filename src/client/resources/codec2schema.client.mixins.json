@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "io.github.tr100000.codec2schema.mixin.client",
+  "plugin": "io.github.tr100000.codec2schema.mixin.Codec2SchemaMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

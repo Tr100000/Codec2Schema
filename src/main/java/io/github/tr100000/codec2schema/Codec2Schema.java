@@ -2,12 +2,10 @@ package io.github.tr100000.codec2schema;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.tr100000.codec2schema.api.CodecHandlerEarlyRegistrationEntrypoint;
-import io.github.tr100000.codec2schema.api.CodecHandlerRegistrationEntrypoint;
+import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.CodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.MapCodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
-import io.github.tr100000.codec2schema.api.SchemaGenerationEntrypoint;
 import io.github.tr100000.codec2schema.impl.DispatchedMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.EitherCodecHandler;
 import io.github.tr100000.codec2schema.impl.HolderSetCodecHandler;
@@ -43,7 +41,6 @@ import io.github.tr100000.codec2schema.impl.wrapped.StringEnumCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -52,19 +49,19 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
-public class Codec2Schema implements ModInitializer {
+public class Codec2Schema {
     public static final String MODID = "codec2schema";
     public static final Logger LOGGER = LoggerFactory.getLogger("Codec2Schema");
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static final Path EXPORT_ROOT_DIR = FabricLoader.getInstance().getGameDir().resolve(MODID);
 
-    @Override
-    public void onInitialize() {}
-
-    public static void registerHandlers() {
-        FabricLoader.getInstance().invokeEntrypoints("codec2schema:register_early", CodecHandlerEarlyRegistrationEntrypoint.class, CodecHandlerEarlyRegistrationEntrypoint::earlyRegister);
+    public static void registerHandlers(List<String> entrypointKeys) {
+        for (String key : entrypointKeys) {
+            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::earlyRegisterHandlers);
+        }
 
         CodecHandlerRegistry.register(DataComponentPatchCodecHandler::predicate, DataComponentPatchCodecHandler::new);
         CodecHandlerRegistry.register(DataComponentTypeCodecHandler::predicate, DataComponentTypeCodecHandler::new);
@@ -108,12 +105,14 @@ public class Codec2Schema implements ModInitializer {
         MapCodecHandlerRegistry.register(EitherMapCodecHandler::predicate, EitherMapCodecHandler::new);
         MapCodecHandlerRegistry.register(PairMapCodecHandler::predicate, PairMapCodecHandler::new);
 
-        FabricLoader.getInstance().invokeEntrypoints("codec2schema:register", CodecHandlerRegistrationEntrypoint.class, CodecHandlerRegistrationEntrypoint::register);
+        for (String key : entrypointKeys) {
+            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::registerHandlers);
+        }
     }
 
     @ApiStatus.Internal
-    public static void generateSchemas() {
-        registerHandlers();
+    public static void afterBootstrap() {
+        ClientDelegate.INSTANCE.registerHandlers();
 
         try {
             FileUtils.deleteDirectory(EXPORT_ROOT_DIR.toFile());
@@ -124,10 +123,17 @@ public class Codec2Schema implements ModInitializer {
 
         LOGGER.info("Starting schema generation");
         long startTimeMillis = System.currentTimeMillis();
-        FabricLoader.getInstance().invokeEntrypoints("codec2schema:generate", SchemaGenerationEntrypoint.class, entrypoint -> {
-            SchemaExporter exporter = new SchemaExporter();
-            entrypoint.generate(exporter);
-        });
+        ClientDelegate.INSTANCE.generateSchemas();
         LOGGER.info("Finished all schema generation in {}ms", System.currentTimeMillis() - startTimeMillis);
+    }
+
+    public static void generateSchemas(List<String> entrypointKeys) {
+        SchemaExporter exporter = new SchemaExporter();
+        for (String key : entrypointKeys) {
+            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, entrypoint -> {
+                entrypoint.generateSchemas(exporter);
+                exporter.clearOptions();
+            });
+        }
     }
 }

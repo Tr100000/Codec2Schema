@@ -1,8 +1,8 @@
 {
   "required": true,
   "package": "io.github.tr100000.codec2schema.mixin",
-  "compatibilityLevel": "JAVA_21",
   "plugin": "io.github.tr100000.codec2schema.mixin.Codec2SchemaMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BuiltInRegistriesMixin",
     "CodecMixin",
@@ -47,8 +47,5 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  },
-  "client": [
-    "compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor"
-  ]
+  }
 }
