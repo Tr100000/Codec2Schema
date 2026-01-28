@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.2.0+26.1-snapshot-4]
+## [0.2.0+26.1-snapshot-5]
+
+**Updated to 26.1-snapshot-5**
 
 ### Changed
 - Replaced entrypoints with `codec2schema:main` and `codec2schema:client`, these must implement `Codec2SchemaPlugin`
