@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1+26.1-snapshot-6]
+
+**Updated to 26.1-snapshot-6**
+
+### Changed
+- Removed the old entrypoint classes
+  - (I forgot to do this)
+
 ## [0.2.0+26.1-snapshot-5]
 
 **Updated to 26.1-snapshot-5**
