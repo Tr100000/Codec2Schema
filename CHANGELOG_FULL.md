@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1+1.21.11]
+
+### Changed
+- Removed the old entrypoint classes
+  - (I forgot to do this)
+
 ## [0.2.0+1.21.11]
 
 ### Changed
