@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @NullMarked
 public interface StringRepresentableMixin {
     @Inject(method = "fromEnumWithMapping", at = @At("RETURN"), cancellable = true)
-    private static <E extends Enum<E> & StringRepresentable> void fromEnumWithMapping(Supplier<E[]> supplier, Function<String, String> function, CallbackInfoReturnable<StringRepresentable.EnumCodec<E>> cir, @Local E[] enums, @Local(ordinal = 1) Function<String, E> function2) {
+    private static <E extends Enum<E> & StringRepresentable> void fromEnumWithMapping(Supplier<E[]> supplier, Function<String, String> function, CallbackInfoReturnable<StringRepresentable.EnumCodec<E>> cir, @Local(name = "valueArray") E[] enums, @Local(name = "lookupFunction") Function<String, E> function2) {
         StringRepresentable.EnumCodec<E> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedEnumCodec<>(enums, function2) {
             @Override
@@ -43,7 +43,7 @@ public interface StringRepresentableMixin {
     }
 
     @Inject(method = "fromValues", at = @At("RETURN"), cancellable = true)
-    private static <T extends StringRepresentable> void fromValues(Supplier<T[]> supplier, CallbackInfoReturnable<Codec<T>> cir, @Local T[] enumValues) {
+    private static <T extends StringRepresentable> void fromValues(Supplier<T[]> supplier, CallbackInfoReturnable<Codec<T>> cir, @Local(name = "valueArray") T[] enumValues) {
         Codec<T> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedStringRepresentableCodec<>() {
             @Override

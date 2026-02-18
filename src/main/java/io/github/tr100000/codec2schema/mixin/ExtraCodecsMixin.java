@@ -189,7 +189,7 @@ public abstract class ExtraCodecsMixin {
     @Inject(method = "catchDecoderException", at = @At("RETURN"), cancellable = true)
     private static <A> void catchDecoderException(Codec<A> codec, CallbackInfoReturnable<Codec<A>> cir) {
         Codec<A> capturedReturnValue = cir.getReturnValue();
-        cir.setReturnValue(new WrappedCodec<A>() {
+        cir.setReturnValue(new WrappedCodec<>() {
             @Override
             public Codec<A> original() {
                 return codec;

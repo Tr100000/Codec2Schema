@@ -19,6 +19,7 @@ public class EitherMapCodecHandler implements MapCodecHandler<EitherMapCodec<?, 
         JsonObject json = new JsonObject();
         JsonArray anyOf = JsonUtils.getOrCreateArray(json, "anyOf");
         EitherMapCodecAccessor<?, ?> accessor = (EitherMapCodecAccessor<?, ?>)(Object)codec;
+        assert accessor != null;
         anyOf.add(context.requestDefinition(accessor.getFirst().codec()));
         anyOf.add(context.requestDefinition(accessor.getSecond().codec()));
         return json;

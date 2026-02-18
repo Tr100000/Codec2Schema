@@ -18,6 +18,7 @@ public class PairMapCodecHandler implements MapCodecHandler<PairMapCodec<?, ?>> 
     public void field(JsonObject json, JsonObject properties, JsonArray required, PairMapCodec<?, ?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonArray allOf = JsonUtils.getOrCreateArray(json, "allOf");
         PairMapCodecAccessor<?, ?> accessor = (PairMapCodecAccessor<?, ?>)(Object)codec;
+        assert accessor != null;
         allOf.add(context.requestDefinition(accessor.getFirst().codec()));
         allOf.add(context.requestDefinition(accessor.getSecond().codec()));
     }
