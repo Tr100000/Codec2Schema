@@ -6,7 +6,7 @@ import io.github.tr100000.codec2schema.api.SchemaExporter;
 import net.minecraft.client.PeriodicNotificationManager;
 import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.renderer.PostChainConfig;
-import net.minecraft.client.renderer.block.model.BlockModelDefinition;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.client.resources.WaypointStyle;
@@ -17,7 +17,7 @@ public class Codec2SchemaClientPlugin implements Codec2SchemaPlugin {
     public void generateSchemas(SchemaExporter exporter) {
         // https://minecraft.wiki/w/Resource_pack#Directory_structure
         exportResourceCodec(exporter, SpriteSources.FILE_CODEC, "atlases.json");
-        exportResourceCodec(exporter, BlockModelDefinition.CODEC, "blockstates.json");
+        exportResourceCodec(exporter, BlockStateModelDispatcher.CODEC, "blockstates.json");
         exportResourceCodec(exporter, EquipmentClientInfo.CODEC, "equipment.json");
         exportResourceCodec(exporter, FontManager.FontDefinitionFile.CODEC, "font.json");
         exportResourceCodec(exporter, ClientItem.CODEC, "items.json");
