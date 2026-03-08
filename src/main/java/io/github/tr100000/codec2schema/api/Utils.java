@@ -3,7 +3,6 @@ package io.github.tr100000.codec2schema.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.OptionalFieldCodec;
-import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
@@ -19,8 +18,12 @@ public final class Utils {
     private static final String RECURSIVE_MAP_CODEC_CLASS_NAME = "class com.mojang.serialization.MapCodec$RecursiveMapCodec";
 
     public static <T> Optional<List<ValueStringPair<T>>> getPossibleValues(Codec<T> codec) {
+        for (CodecValueLister lister : CodecValueLister.LISTERS) {
+            List<ValueStringPair<T>> values = lister.possibleValues(codec);
+            if (values != null) return Optional.of(values);
+        }
+
         return switch (codec) {
-            case CodecWithValuePairs<T> codecWithValuePairs -> Optional.of(codecWithValuePairs.possibleValues());
             case WrappedCodec<T> wrappedCodec -> getPossibleValues(wrappedCodec.original());
             case Codec.RecursiveCodec<T> recursiveCodec -> getPossibleValues(getRecursiveWrapped(recursiveCodec));
             default -> Optional.empty();

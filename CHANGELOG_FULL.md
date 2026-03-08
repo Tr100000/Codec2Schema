@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2+26.1-snapshot-11]
+
+### Changed
+- Added support for `CodecFromMap` from TrUtils
+- Small tweaks and performance improvements
+
 ## [0.2.1+26.1-snapshot-11]
 
 **Updated to 26.1-snapshot-11**

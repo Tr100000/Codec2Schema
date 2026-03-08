@@ -61,6 +61,6 @@ public final class JsonUtils {
     }
 
     public static String toSchemaSafeString(String str) {
-        return str.replaceAll(" ", "_").replaceAll("/", "_");
+        return str.replace(' ', '_').replace('/', '_');
     }
 }

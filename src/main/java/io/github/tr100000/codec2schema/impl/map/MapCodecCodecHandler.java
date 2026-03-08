@@ -84,15 +84,12 @@ public class MapCodecCodecHandler implements CodecHandler<MapCodec.MapCodecCodec
 
     private static void handleField(JsonObject json, JsonObject properties, JsonArray required, MapCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         switch (codec) {
-            case WrappedRecordCodec<?> wrappedRecordCodec -> {
+            case WrappedRecordCodec<?> wrappedRecordCodec ->
                 JsonUtils.getOrCreateArray(json, "allOf").add(context.requestDefinition(wrappedRecordCodec.codec()));
-            }
-            case KeyDispatchCodec<?, ?> keyDispatchCodec -> {
+            case KeyDispatchCodec<?, ?> keyDispatchCodec ->
                 keyDispatchField(json, properties, required, keyDispatchCodec, context);
-            }
-            case WrappedDispatchOptionalValueMapCodec<?, ?> wrappedDispatchOptionalValueMapCodec -> {
+            case WrappedDispatchOptionalValueMapCodec<?, ?> wrappedDispatchOptionalValueMapCodec ->
                 wrappedDispatchOptionalValueMapCodecSchema(json, properties, required, wrappedDispatchOptionalValueMapCodec, context);
-            }
             default -> {
                 if (Utils.isRecursiveMapCodec(codec)) {
                     JsonUtils.getOrCreateArray(json, "allOf").add(context.createRef(definitionContext.name().orElseThrow()));
