@@ -24,6 +24,7 @@ public class DataComponentPatchCodecHandler implements CodecHandler<Codec<?>> {
             if (type.isTransient()) continue;
 
             Identifier id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type);
+            assert id != null;
             if (context.debugMode) Codec2Schema.LOGGER.info(id.toString());
             properties.add(id.toString(), context.requestDefinition(type.codecOrThrow()));
             properties.add("!" + id, new JsonObject());

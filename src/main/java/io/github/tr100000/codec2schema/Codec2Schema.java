@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.CodecHandlerRegistry;
+import io.github.tr100000.codec2schema.api.CodecValueLister;
 import io.github.tr100000.codec2schema.api.MapCodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
+import io.github.tr100000.codec2schema.impl.CodecWithValuePairsLister;
 import io.github.tr100000.codec2schema.impl.DispatchedMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.EitherCodecHandler;
 import io.github.tr100000.codec2schema.impl.HolderSetCodecHandler;
@@ -62,6 +64,8 @@ public class Codec2Schema {
         for (String key : entrypointKeys) {
             FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::earlyRegisterHandlers);
         }
+
+        CodecValueLister.LISTERS.add(new CodecWithValuePairsLister());
 
         CodecHandlerRegistry.register(DataComponentPatchCodecHandler::predicate, DataComponentPatchCodecHandler::new);
         CodecHandlerRegistry.register(DataComponentTypeCodecHandler::predicate, DataComponentTypeCodecHandler::new);

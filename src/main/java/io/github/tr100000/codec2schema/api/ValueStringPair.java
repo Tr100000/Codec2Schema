@@ -13,6 +13,14 @@ public record ValueStringPair<T>(T value, String str) {
         return new ValueStringPair<>(value, mapper.apply(str));
     }
 
+    public static <T, U> Function<ValueStringPair<T>, ValueStringPair<U>> mappingValue(Function<? super T, ? extends U> mapper) {
+        return pair -> pair.mapValue(mapper);
+    }
+
+    public static <T> UnaryOperator<ValueStringPair<T>> mappingStr(UnaryOperator<String> mapper) {
+        return pair -> pair.mapStr(mapper);
+    }
+
     public static <T> Predicate<ValueStringPair<T>> valueNotNull() {
         return pair -> pair.value != null;
     }

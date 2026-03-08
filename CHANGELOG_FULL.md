@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2+1.21.11]
+
+### Changed
+- Added support for `CodecFromMap` from TrUtils
+- Small tweaks and performance improvements
+
 ## [0.2.1+1.21.11]
 
 ### Changed

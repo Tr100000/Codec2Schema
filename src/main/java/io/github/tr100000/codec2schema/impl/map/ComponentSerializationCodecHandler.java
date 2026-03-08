@@ -15,13 +15,13 @@ public class ComponentSerializationCodecHandler implements MapCodecHandler<MapCo
 
     @Override
     public void field(JsonObject json, JsonObject properties, JsonArray required, MapCodec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
-        if (codec instanceof ComponentSerialization.FuzzyCodec<?> fuzzyCodec) {
-            fuzzyCodecSchema(json, fuzzyCodec, context);
+        switch (codec) {
+            case ComponentSerialization.FuzzyCodec<?> fuzzyCodec ->
+                fuzzyCodecSchema(json, fuzzyCodec, context);
+            case ComponentSerialization.StrictEither<?> strictEither ->
+                strictEitherSchema(json, properties, strictEither, context);
+            default -> throw new IllegalArgumentException(); // this will never happen
         }
-        else if (codec instanceof ComponentSerialization.StrictEither<?> strictEither) {
-            strictEitherSchema(json, properties, strictEither, context);
-        }
-        else throw new IllegalArgumentException(); // this will never happen
     }
 
     private void fuzzyCodecSchema(JsonObject json, ComponentSerialization.FuzzyCodec<?> codec, SchemaContext context) {

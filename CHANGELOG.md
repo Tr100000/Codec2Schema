@@ -1,3 +1,3 @@
 ### Changed
-- Removed the old entrypoint classes
-  - (I forgot to do this)
+- Added support for `CodecFromMap` from TrUtils
+- Small tweaks and performance improvements

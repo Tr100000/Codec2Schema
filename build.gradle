@@ -14,10 +14,10 @@ base {
 
 repositories {
     maven {
-        name = "TerraformersMC Maven"
-        url = "https://maven.terraformersmc.com/releases"
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
         content {
-            includeGroup "com.terraformersmc"
+            includeGroup "maven.modrinth"
         }
     }
 }
@@ -27,6 +27,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modCompileOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modCompileOnly "maven.modrinth:trutils:${project.trutils_version}"
 }
 
 apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scripts/devlogin.gradle"
