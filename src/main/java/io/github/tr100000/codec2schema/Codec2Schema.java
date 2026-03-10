@@ -8,6 +8,7 @@ import io.github.tr100000.codec2schema.api.CodecValueLister;
 import io.github.tr100000.codec2schema.api.MapCodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
 import io.github.tr100000.codec2schema.impl.CodecWithValuePairsLister;
+import io.github.tr100000.codec2schema.impl.CompoundListCodecHandler;
 import io.github.tr100000.codec2schema.impl.DispatchedMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.EitherCodecHandler;
 import io.github.tr100000.codec2schema.impl.HolderSetCodecHandler;
@@ -41,6 +42,7 @@ import io.github.tr100000.codec2schema.impl.wrapped.CodecWithValuesHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.RecursiveCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.StringEnumCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedCodecHandler;
+import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
 import net.fabricmc.loader.api.FabricLoader;
@@ -60,6 +62,7 @@ public class Codec2Schema {
 
     public static final Path EXPORT_ROOT_DIR = FabricLoader.getInstance().getGameDir().resolve(MODID);
 
+    @ApiStatus.Internal
     public static void registerHandlers(List<String> entrypointKeys) {
         for (String key : entrypointKeys) {
             FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::earlyRegisterHandlers);
@@ -80,8 +83,10 @@ public class Codec2Schema {
         CodecHandlerRegistry.register(NumberStreamCodecHandler::predicate, NumberStreamCodecHandler::createHandler);
         CodecHandlerRegistry.register(NumberCodecHandler::predicate, NumberCodecHandler::createHandler);
         CodecHandlerRegistry.register(WrappedRangedNumberCodecHandler::predicate, WrappedRangedNumberCodecHandler::new);
+        CodecHandlerRegistry.register(WrappedConstrainedStringCodecHandler::predicate, WrappedConstrainedStringCodecHandler::new);
         CodecHandlerRegistry.register(PassthroughCodecHandler::predicate, PassthroughCodecHandler::new);
         CodecHandlerRegistry.register(WrappedUnitCodecHandler::predicate, WrappedUnitCodecHandler::new);
+        CodecHandlerRegistry.register(CompoundListCodecHandler::predicate, CompoundListCodecHandler::new);
         CodecHandlerRegistry.register(EitherCodecHandler::predicate, EitherCodecHandler::new);
         CodecHandlerRegistry.register(XorCodecHandler::predicate, XorCodecHandler::new);
         CodecHandlerRegistry.register(ListCodecHandler::predicate, ListCodecHandler::new);
