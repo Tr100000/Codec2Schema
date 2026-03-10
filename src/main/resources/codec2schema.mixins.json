@@ -6,6 +6,7 @@
   "mixins": [
     "BuiltInRegistriesMixin",
     "CodecMixin",
+    "CompoundListCodecAccessor",
     "EitherMapCodecAccessor",
     "EncoderCacheMixin",
     "ExtraCodecsMixin",

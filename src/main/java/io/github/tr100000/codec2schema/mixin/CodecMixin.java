@@ -15,10 +15,13 @@ import com.mojang.serialization.MapDecoder;
 import com.mojang.serialization.MapEncoder;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import io.github.tr100000.codec2schema.api.NumberBound;
 import io.github.tr100000.codec2schema.api.ValueStringPair;
 import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
+import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodec;
+import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodec;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -218,5 +222,83 @@ public interface CodecMixin<A> {
                 return capturedReturnValue.toString();
             }
         });
+    }
+
+    @Inject(method = "intRange", at = @At("RETURN"), cancellable = true)
+    private static void intRange(int minInclusive, int maxInclusive, CallbackInfoReturnable<Codec<Integer>> cir) {
+        Codec<Integer> capturedReturnValue = cir.getReturnValue();
+        cir.setReturnValue(new WrappedRangedNumberCodec<>() {
+            @Override
+            public Codec<Integer> original() {
+                return capturedReturnValue;
+            }
+
+            @Override
+            public Optional<NumberBound<Integer>> min() {
+                return Optional.of(new NumberBound<>(minInclusive, false));
+            }
+
+            @Override
+            public Optional<NumberBound<Integer>> max() {
+                return Optional.of(new NumberBound<>(maxInclusive, false));
+            }
+        });
+    }
+
+    @Inject(method = "floatRange", at = @At("RETURN"), cancellable = true)
+    private static void floatRange(float minInclusive, float maxInclusive, CallbackInfoReturnable<Codec<Float>> cir) {
+        Codec<Float> capturedReturnValue = cir.getReturnValue();
+        cir.setReturnValue(new WrappedRangedNumberCodec<>() {
+            @Override
+            public Codec<Float> original() {
+                return capturedReturnValue;
+            }
+
+            @Override
+            public boolean isInteger() {
+                return false;
+            }
+
+            @Override
+            public Optional<NumberBound<Float>> min() {
+                return Optional.of(new NumberBound<>(minInclusive, false));
+            }
+
+            @Override
+            public Optional<NumberBound<Float>> max() {
+                return Optional.of(new NumberBound<>(maxInclusive, false));
+            }
+        });
+    }
+
+    @Inject(method = "doubleRange", at = @At("RETURN"), cancellable = true)
+    private static void doubleRange(double minInclusive, double maxInclusive, CallbackInfoReturnable<Codec<Double>> cir) {
+        Codec<Double> capturedReturnValue = cir.getReturnValue();
+        cir.setReturnValue(new WrappedRangedNumberCodec<>() {
+            @Override
+            public Codec<Double> original() {
+                return capturedReturnValue;
+            }
+
+            @Override
+            public boolean isInteger() {
+                return false;
+            }
+
+            @Override
+            public Optional<NumberBound<Double>> min() {
+                return Optional.of(new NumberBound<>(minInclusive, false));
+            }
+
+            @Override
+            public Optional<NumberBound<Double>> max() {
+                return Optional.of(new NumberBound<>(maxInclusive, false));
+            }
+        });
+    }
+
+    @Inject(method = "string", at = @At("RETURN"), cancellable = true)
+    private static void string(int minSize, int maxSize, CallbackInfoReturnable<Codec<String>> cir) {
+        cir.setReturnValue(new WrappedConstrainedStringCodec(cir.getReturnValue(), minSize, maxSize));
     }
 }
