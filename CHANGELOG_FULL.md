@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0-beta.1+26.1-pre-1]
+
+**Updated to 26.1-pre-1**
+
+### Changed
+- Improve support for ranged codecs and constrained-size string codecs
+
 ## [0.2.2+26.1-snapshot-11]
 
 ### Changed

@@ -1,3 +1,4 @@
+**Updated to 26.1-pre-1**
+
 ### Changed
-- Added support for `CodecFromMap` from TrUtils
-- Small tweaks and performance improvements
+- Improve support for ranged codecs and constrained-size string codecs

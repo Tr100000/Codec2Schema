@@ -2,6 +2,7 @@ package io.github.tr100000.codec2schema.mixin.specific;
 
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.impl.specific.WrappedStateHolderCodec;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.StateHolder;
 import org.jspecify.annotations.NullMarked;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +16,7 @@ import java.util.function.Function;
 @NullMarked
 public abstract class StateHolderMixin {
     @Inject(method = "codec", at = @At("RETURN"), cancellable = true)
-    private static <O, S extends StateHolder<O, S>> void codec(Codec<O> codec, Function<O, S> function, CallbackInfoReturnable<Codec<S>> cir) {
+    private static <O, S extends StateHolder<O, S>> void codec(Codec<O> ownerCodec, Function<O, S> defaultState, Function<O, StateDefinition<O, S>> stateDefinition, CallbackInfoReturnable<Codec<S>> cir) {
         Codec<S> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedStateHolderCodec<>() {
             @Override
@@ -25,13 +26,13 @@ public abstract class StateHolderMixin {
 
             @Override
             public Codec<?> dispatchedCodec() {
-                return codec;
+                return ownerCodec;
             }
 
             @Override
             @SuppressWarnings("unchecked")
             public Function<Object, S> toStateHolderFunction() {
-                return (Function<Object, S>)function;
+                return (Function<Object, S>)defaultState;
             }
 
             @Override
