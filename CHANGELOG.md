@@ -1,3 +1,2 @@
 ### Changed
-- Added support for `CodecFromMap` from TrUtils
-- Small tweaks and performance improvements
+- Improve support for ranged codecs and constrained-size string codecs
