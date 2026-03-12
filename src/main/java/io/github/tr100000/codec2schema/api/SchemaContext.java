@@ -3,6 +3,7 @@ package io.github.tr100000.codec2schema.api;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
+import io.github.tr100000.codec2schema.Codec2SchemaConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import org.jspecify.annotations.Nullable;
 
@@ -16,8 +17,13 @@ public class SchemaContext {
     private final Map<String, DefinitionEntry> definitions = new Object2ObjectArrayMap<>();
     private final LinkedList<String> definitionStack = new LinkedList<>();
 
-    public boolean debugMode = false;
-    public boolean allowInline = true;
+    public boolean debugMode;
+    public boolean allowInline;
+
+    public SchemaContext() {
+        debugMode = Codec2SchemaConfig.defaultDebugMode;
+        allowInline = Codec2SchemaConfig.defaultAllowInline;
+    }
 
     public void addDefinition(String name, Codec<?> codec, JsonObject json) {
         Objects.requireNonNull(name, "name is null");

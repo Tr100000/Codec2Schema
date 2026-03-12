@@ -137,6 +137,8 @@ public class Codec2Schema {
     }
 
     public static void generateSchemas(List<String> entrypointKeys) {
+        Codec2SchemaConfig.load();
+
         SchemaExporter exporter = new SchemaExporter();
         for (String key : entrypointKeys) {
             FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, entrypoint -> {
