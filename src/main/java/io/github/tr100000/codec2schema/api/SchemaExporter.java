@@ -3,6 +3,9 @@ package io.github.tr100000.codec2schema.api;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
+import io.github.tr100000.codec2schema.Codec2SchemaConfig;
+import io.github.tr100000.codec2schema.SingularReferenceInliner;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SchemaExporter implements BiConsumer<Codec<?>, String> {
-    private Consumer<SchemaContext> options;
+    private @Nullable Consumer<SchemaContext> options;
 
     public void accept(Codec<?> codec, String path) {
         export(codec, Codec2Schema.EXPORT_ROOT_DIR.resolve(path));
@@ -56,6 +59,9 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
 
             long startTimeMillis = System.currentTimeMillis();
             JsonObject json = convert(codec);
+            if (Codec2SchemaConfig.inlineSingularReference) {
+                json = SingularReferenceInliner.process(json);
+            }
             Files.writeString(path, Codec2Schema.GSON.toJson(json));
             long endTimeMillis = System.currentTimeMillis();
 

@@ -15,6 +15,7 @@ public final class Codec2SchemaConfig {
 
     public static boolean defaultDebugMode = false;
     public static boolean defaultAllowInline = true;
+    public static boolean inlineSingularReference = false;
 
     public static void load() {
         try {
@@ -27,6 +28,7 @@ public final class Codec2SchemaConfig {
 
             defaultDebugMode = GsonHelper.getAsBoolean(json, "defaultDebugMode", false);
             defaultAllowInline = GsonHelper.getAsBoolean(json, "defaultAllowInline", true);
+            inlineSingularReference = GsonHelper.getAsBoolean(json, "inlineSingularReference", false);
         }
         catch (IOException e) {
             throw new RuntimeException("Failed to load Codec2SChema config!", e);
@@ -40,6 +42,7 @@ public final class Codec2SchemaConfig {
             JsonObject json = new JsonObject();
             json.addProperty("defaultDebugMode", defaultDebugMode);
             json.addProperty("defaultAllowInline", defaultAllowInline);
+            json.addProperty("inlineSingularReference", inlineSingularReference);
 
             Files.writeString(PATH, Codec2Schema.GSON.toJson(json));
         }

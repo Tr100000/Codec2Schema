@@ -25,7 +25,7 @@ public class SchemaContext {
         allowInline = Codec2SchemaConfig.defaultAllowInline;
     }
 
-    public void addDefinition(String name, Codec<?> codec, JsonObject json) {
+    public void addDefinition(String name, @Nullable Codec<?> codec, JsonObject json) {
         Objects.requireNonNull(name, "name is null");
         Objects.requireNonNull(json, "json is null");
         definitions.put(name, new FinishedDefinitionEntry(codec, json));
