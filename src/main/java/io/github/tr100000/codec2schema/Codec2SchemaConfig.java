@@ -29,6 +29,8 @@ public final class Codec2SchemaConfig {
             defaultDebugMode = GsonHelper.getAsBoolean(json, "defaultDebugMode", false);
             defaultAllowInline = GsonHelper.getAsBoolean(json, "defaultAllowInline", true);
             inlineSingularReference = GsonHelper.getAsBoolean(json, "inlineSingularReference", false);
+
+            save();
         }
         catch (IOException e) {
             throw new RuntimeException("Failed to load Codec2SChema config!", e);

@@ -40,7 +40,6 @@ import io.github.tr100000.codec2schema.impl.specific.WrappedStateHolderCodecHand
 import io.github.tr100000.codec2schema.impl.specific.WrappedTypedEntityDataCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.CodecWithValuesHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.RecursiveCodecHandler;
-import io.github.tr100000.codec2schema.impl.wrapped.StringEnumCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHandler;
@@ -70,6 +69,19 @@ public class Codec2Schema {
 
         CodecValueLister.LISTERS.add(new CodecWithValuePairsLister());
 
+        registerSpecificCodecHandlers();
+        registerBaseCodecHandlers();
+        registerSchemaModifiers();
+
+        registerSpecificMapCodecHandlers();
+        registerBaseMapCodecHandlers();
+
+        for (String key : entrypointKeys) {
+            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::registerHandlers);
+        }
+    }
+
+    private static void registerSpecificCodecHandlers() {
         CodecHandlerRegistry.register(DataComponentPatchCodecHandler::predicate, DataComponentPatchCodecHandler::new);
         CodecHandlerRegistry.register(DataComponentTypeCodecHandler::predicate, DataComponentTypeCodecHandler::new);
         CodecHandlerRegistry.register(DataComponentValueMapCodecHandler::predicate, DataComponentValueMapCodecHandler::new);
@@ -78,7 +90,9 @@ public class Codec2Schema {
         CodecHandlerRegistry.register(WrappedRestrictedComponentCodecHandler::predicate, WrappedRestrictedComponentCodecHandler::new);
         CodecHandlerRegistry.register(WrappedStateHolderCodecHandler::predicate, WrappedStateHolderCodecHandler::new);
         CodecHandlerRegistry.register(WrappedTypedEntityDataCodecHandler::predicate, WrappedTypedEntityDataCodecHandler::new);
+    }
 
+    private static void registerBaseCodecHandlers() {
         CodecHandlerRegistry.register(PrimitiveCodecHandler::predicate, PrimitiveCodecHandler::createHandler);
         CodecHandlerRegistry.register(NumberStreamCodecHandler::predicate, NumberStreamCodecHandler::createHandler);
         CodecHandlerRegistry.register(NumberCodecHandler::predicate, NumberCodecHandler::createHandler);
@@ -98,25 +112,28 @@ public class Codec2Schema {
         CodecHandlerRegistry.register(StrictUnboundedMapCodecHandler::predicate, StrictUnboundedMapCodecHandler::new);
         CodecHandlerRegistry.register(RegistryFixedCodecHandler::predicate, RegistryFixedCodecHandler::new);
         CodecHandlerRegistry.register(RegistryFileCodecHandler::predicate, RegistryFileCodecHandler::new);
-        CodecHandlerRegistry.register(StringEnumCodecHandler::predicate, StringEnumCodecHandler::new);
         CodecHandlerRegistry.register(CodecWithValuesHandler::predicate, CodecWithValuesHandler::new);
         CodecHandlerRegistry.register(NumberCodecHandler::rangePredicate, NumberCodecHandler::createRangedHandler);
 
         CodecHandlerRegistry.register(RecursiveCodecHandler::predicate, RecursiveCodecHandler::new);
         CodecHandlerRegistry.register(WrappedCodecHandler::predicate, WrappedCodecHandler::new);
+    }
 
+    private static void registerSpecificMapCodecHandlers() {
         MapCodecHandlerRegistry.register(ComponentSerializationCodecHandler::predicate, ComponentSerializationCodecHandler::new);
         MapCodecHandlerRegistry.register(WrappedUnitMapCodecHandler::predicate, WrappedUnitMapCodecHandler::new);
+    }
 
+    private static void registerBaseMapCodecHandlers() {
         MapCodecHandlerRegistry.register(WrappedFieldMapCodecHandler::predicate, WrappedFieldMapCodecHandler::new);
         MapCodecHandlerRegistry.register(OptionalFieldCodecHandler::predicate, OptionalFieldCodecHandler::new);
         MapCodecHandlerRegistry.register(SimpleMapCodecHandler::predicate, SimpleMapCodecHandler::create);
         MapCodecHandlerRegistry.register(EitherMapCodecHandler::predicate, EitherMapCodecHandler::new);
         MapCodecHandlerRegistry.register(PairMapCodecHandler::predicate, PairMapCodecHandler::new);
+    }
 
-        for (String key : entrypointKeys) {
-            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::registerHandlers);
-        }
+    private static void registerSchemaModifiers() {
+        // do nothing
     }
 
     @ApiStatus.Internal

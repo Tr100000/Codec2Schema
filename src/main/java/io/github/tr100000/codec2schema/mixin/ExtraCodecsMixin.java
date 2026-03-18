@@ -249,6 +249,11 @@ public abstract class ExtraCodecsMixin {
                 public String toString() {
                     return capturedReturnValue.toString();
                 }
+
+                @Override
+                public Codec<?> fallbackCodec() {
+                    return codec;
+                }
             });
         }
         else {

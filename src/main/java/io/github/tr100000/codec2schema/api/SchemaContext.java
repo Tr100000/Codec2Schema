@@ -61,6 +61,7 @@ public class SchemaContext {
                 json.addProperty("_debug", codec.toString());
                 json.addProperty("_handler", handler.getClass().toString());
             }
+            json = CodecHandlerRegistry.applyModifiers(codec, json);
             addDefinition(name, codec, json);
             return createRef(name);
         }
@@ -103,6 +104,8 @@ public class SchemaContext {
     }
 
     public void addDefinitions(JsonObject json) {
+        if (definitions.isEmpty()) return;
+
         JsonObject definitionsObject = new JsonObject();
         definitions.forEach((name, definition) -> {
             if (definition instanceof FinishedDefinitionEntry finishedEntry) {

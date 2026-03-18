@@ -7,6 +7,7 @@ import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import io.github.tr100000.codec2schema.api.ValueStringPair;
 import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -19,18 +20,18 @@ public class CodecWithValuesHandler implements CodecHandler<CodecWithValuePairs<
     @Override
     public JsonObject toSchema(CodecWithValuePairs<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         if (codec.getName().isPresent()) {
-            return context.requestDefinition(codec.getName().get(), () -> createFromValues(codec.possibleValues().stream().map(ValueStringPair::str)));
+            return context.requestDefinition(codec.getName().get(), () -> createFromValues(context, codec.possibleValues().stream().map(ValueStringPair::str), codec.fallbackCodec()));
         }
         else {
             List<? extends ValueStringPair<?>> stringValues = codec.possibleValues();
             if (stringValues != null) {
-                return createFromValues(stringValues.stream().map(ValueStringPair::str));
+                return createFromValues(context, stringValues.stream().map(ValueStringPair::str), codec.fallbackCodec());
             }
             return context.requestDefinition(codec.original());
         }
     }
 
-    public static JsonObject createFromValues(Stream<String> values) {
+    public static JsonObject createFromValues(SchemaContext context, Stream<String> values, @Nullable Codec<?> fallbackCodec) {
         JsonObject json = new JsonObject();
         JsonArray anyOf = new JsonArray();
 
@@ -38,14 +39,16 @@ public class CodecWithValuesHandler implements CodecHandler<CodecWithValuePairs<
         JsonArray enumArray = new JsonArray();
         values.forEach(enumArray::add);
         enumObj.add("enum", enumArray);
-
-        JsonObject strObj = new JsonObject();
-        strObj.addProperty("type", "string");
-
         anyOf.add(enumObj);
-        anyOf.add(strObj);
-        json.add("anyOf", anyOf);
-        return json;
+
+        if (fallbackCodec != null) {
+            anyOf.add(context.requestDefinition(fallbackCodec));
+            json.add("anyOf", anyOf);
+            return json;
+        }
+        else {
+            return enumObj;
+        }
     }
 
     @Override

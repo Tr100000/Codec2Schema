@@ -22,6 +22,7 @@ import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodec;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodec;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -77,6 +78,11 @@ public interface CodecMixin<A> {
                 @Override
                 public Codec<S> original() {
                     return fakeThisCodec;
+                }
+
+                @Override
+                public @Nullable Codec<?> fallbackCodec() {
+                    return codecWithValuePairs.fallbackCodec();
                 }
 
                 @Override

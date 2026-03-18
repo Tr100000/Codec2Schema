@@ -5,7 +5,7 @@ import io.github.tr100000.codec2schema.api.ValueStringPair;
 import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import org.jspecify.annotations.NullMarked;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Mixin(Registry.class)
-@NullMarked
 // TODO inject into referenceHolderWithLifecycle instead
 public interface RegistryMixin<T> {
     @Inject(method = "byNameCodec", at = @At("RETURN"), cancellable = true)
@@ -34,6 +33,11 @@ public interface RegistryMixin<T> {
             @Override
             public Codec<T> original() {
                 return capturedReturnValue;
+            }
+
+            @Override
+            public Codec<?> fallbackCodec() {
+                return Identifier.CODEC;
             }
 
             @Override
@@ -67,6 +71,11 @@ public interface RegistryMixin<T> {
             @Override
             public Codec<Holder.Reference<T>> original() {
                 return capturedReturnValue;
+            }
+
+            @Override
+            public Codec<?> fallbackCodec() {
+                return Identifier.CODEC;
             }
 
             @Override

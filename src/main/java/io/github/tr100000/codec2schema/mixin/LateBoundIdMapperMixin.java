@@ -34,6 +34,11 @@ public abstract class LateBoundIdMapperMixin<I, V> {
             public Codec<I> original() {
                 return codec;
             }
+
+            @Override
+            public Codec<?> fallbackCodec() {
+                return codec;
+            }
         };
         return original.call(wrappedCodec, function, function2);
     }
