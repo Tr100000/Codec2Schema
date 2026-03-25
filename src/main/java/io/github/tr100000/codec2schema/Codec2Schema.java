@@ -133,7 +133,7 @@ public class Codec2Schema {
     }
 
     private static void registerSchemaModifiers() {
-        // do nothing
+        // nothing
     }
 
     @ApiStatus.Internal

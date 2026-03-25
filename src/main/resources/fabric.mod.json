@@ -35,7 +35,7 @@
   "accessWidener": "codec2schema.classtweaker",
 	"depends": {
 		"fabricloader": ">=0.18",
-		"minecraft": ">=26-",
+		"minecraft": "~26.1",
 		"java": ">=25"
 	}
 }

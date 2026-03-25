@@ -16,3 +16,4 @@ accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither 
 accessible field net/minecraft/world/level/levelgen/structure/pools/SinglePoolElement TEMPLATE_CODEC Lcom/mojang/serialization/Codec;
 accessible field net/minecraft/client/PeriodicNotificationManager CODEC Lcom/mojang/serialization/Codec;
 accessible field net/minecraft/world/level/block/entity/SignText LINES_CODEC Lcom/mojang/serialization/Codec;
+accessible field net/minecraft/advancements/Advancement CRITERIA_CODEC Lcom/mojang/serialization/Codec;
