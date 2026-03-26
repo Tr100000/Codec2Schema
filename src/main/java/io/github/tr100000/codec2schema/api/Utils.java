@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.OptionalFieldCodec;
 import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
+import io.github.tr100000.codec2schema.impl.map.WrappedDefaultedOptionalFieldMapCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecursiveCodecAccessor;
@@ -45,6 +46,7 @@ public final class Utils {
                 yield fieldName;
             }
             case OptionalFieldCodec<?> optionalFieldCodec -> ((OptionalFieldCodecAccessor<?>)optionalFieldCodec).getName();
+            case WrappedDefaultedOptionalFieldMapCodec<?> wrappedOptionalFieldCodec -> wrappedOptionalFieldCodec.getName();
             default -> throw new IllegalArgumentException("Unexpected value: " + codec);
         };
     }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CodecWithValuePairs<A> extends Codec<A> {
-    @Nullable List<ValueStringPair<A>> possibleValues();
+    List<ValueStringPair<A>> possibleValues();
     Codec<A> original();
 
     default @Nullable Codec<?> fallbackCodec() {

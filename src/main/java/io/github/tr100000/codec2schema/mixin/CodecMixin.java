@@ -19,6 +19,7 @@ import io.github.tr100000.codec2schema.api.NumberBound;
 import io.github.tr100000.codec2schema.api.ValueStringPair;
 import io.github.tr100000.codec2schema.api.codec.CodecWithValuePairs;
 import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
+import io.github.tr100000.codec2schema.impl.map.WrappedDefaultedOptionalFieldMapCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodec;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodec;
@@ -157,6 +158,63 @@ public interface CodecMixin<A> {
             @Override
             public String toString() {
                 return name.get();
+            }
+        };
+    }
+
+    @Inject(method = "optionalFieldOf(Ljava/lang/String;Ljava/lang/Object;Z)Lcom/mojang/serialization/MapCodec;", at = @At("RETURN"), cancellable = true)
+    private void optionalFieldOf(String name, A defaultValue, boolean lenient, CallbackInfoReturnable<MapCodec<A>> cir) {
+        cir.setReturnValue(wrapOptionalFieldOf(name, defaultValue, cir.getReturnValue()));
+    }
+
+    @Inject(method = "optionalFieldOf(Ljava/lang/String;Lcom/mojang/serialization/Lifecycle;Ljava/lang/Object;Lcom/mojang/serialization/Lifecycle;Z)Lcom/mojang/serialization/MapCodec;", at = @At("RETURN"), cancellable = true)
+    private void optionalFieldOf(String name, Lifecycle fieldLifecycle, A defaultValue, Lifecycle lifecycleOfDefault, boolean lenient, CallbackInfoReturnable<MapCodec<A>> cir) {
+        cir.setReturnValue(wrapOptionalFieldOf(name, defaultValue, cir.getReturnValue()));
+    }
+
+    @Unique
+    @SuppressWarnings("unchecked")
+    private MapCodec<A> wrapOptionalFieldOf(String name, A defaultValue, MapCodec<A> capturedReturnValue) {
+        Codec<A> thisCodec = (Codec<A>)this;
+        return new WrappedDefaultedOptionalFieldMapCodec<>() {
+            @Override
+            public MapCodec<A> original() {
+                return capturedReturnValue;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public Codec<A> getElementCodec() {
+                return thisCodec;
+            }
+
+            @Override
+            public A defaultValue() {
+                return defaultValue;
+            }
+
+            @Override
+            public <T> Stream<T> keys(DynamicOps<T> ops) {
+                return original().keys(ops);
+            }
+
+            @Override
+            public <T> DataResult<A> decode(final DynamicOps<T> ops, final MapLike<T> input) {
+                return original().decode(ops, input);
+            }
+
+            @Override
+            public <T> RecordBuilder<T> encode(final A input, final DynamicOps<T> ops, final RecordBuilder<T> prefix) {
+                return original().encode(input, ops, prefix);
+            }
+
+            @Override
+            public String toString() {
+                return original().toString();
             }
         };
     }
