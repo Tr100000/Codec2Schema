@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0+26.1]
+
+### Added
+- Improve support for optional fields by including default values in exported schemas
+
+### Fixed
+- Fixed the value part of `SimpleMapCodec`s being completely ignored
+
 ## [0.3.0-beta.2+26.1]
 
 **Updated to 26.1**

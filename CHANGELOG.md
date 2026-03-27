@@ -1,5 +1,5 @@
 ### Added
-- Better support optional fields with a default value
+- Improve support for optional fields by including default values in exported schemas
 
 ### Fixed
-- Fixed the value part of `SimpleMapCodec`s being completely ignored   
+- Fixed the value part of `SimpleMapCodec`s being completely ignored
