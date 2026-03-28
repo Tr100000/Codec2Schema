@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Contract;
 public interface SchemaModifier<T> {
     @Contract(pure = true)
     boolean shouldApplyTo(T codec, ModificationStage stage);
-    
+
     JsonObject apply(T codec, JsonObject json);
 
     enum ModificationStage {
