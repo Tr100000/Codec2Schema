@@ -24,7 +24,7 @@ public class CodecWithValuesHandler implements CodecHandler<CodecWithValuePairs<
         }
         else {
             List<? extends ValueStringPair<?>> stringValues = codec.possibleValues();
-            if (stringValues != null) {
+            if (!stringValues.isEmpty()) {
                 return createFromValues(context, stringValues.stream().map(ValueStringPair::str), codec.fallbackCodec());
             }
             return context.requestDefinition(codec.original());

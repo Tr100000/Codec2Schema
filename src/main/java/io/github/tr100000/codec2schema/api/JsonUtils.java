@@ -3,6 +3,8 @@ package io.github.tr100000.codec2schema.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
 
 public final class JsonUtils {
     private JsonUtils() {}
@@ -29,11 +31,13 @@ public final class JsonUtils {
         }
     }
 
+    @Contract("_, _, _ -> new")
     public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject thenSchema) {
         return schemaIfPropertyEquals(propertyName, value, thenSchema, null);
     }
 
-    public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject thenSchema, JsonObject elseSchema) {
+    @Contract("_, _, _, _ -> new")
+    public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject thenSchema, @Nullable JsonObject elseSchema) {
         JsonObject json = new JsonObject();
 
         JsonObject ifJson = new JsonObject();
@@ -49,7 +53,8 @@ public final class JsonUtils {
         return json;
     }
 
-    public static void setProperty(JsonObject json, String property, Object value) {
+    @Contract(mutates = "param1")
+    public static void setProperty(JsonObject json, String property, @Nullable Object value) {
         switch (value) {
             case null -> json.add(property, JsonNull.INSTANCE);
             case String s -> json.addProperty(property, s);
@@ -60,6 +65,7 @@ public final class JsonUtils {
         }
     }
 
+    @Contract(pure = true)
     public static String toSchemaSafeString(String str) {
         return str.replace(' ', '_').replace('/', '_');
     }

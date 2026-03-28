@@ -3,6 +3,7 @@ package io.github.tr100000.codec2schema.api;
 import com.mojang.serialization.MapCodec;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class MapCodecHandlerRegistry {
     }
 
     @SuppressWarnings("unchecked")
+    @Contract(pure = true)
     public static <T extends MapCodec<?>> MapCodecHandler<T> getHandlerOrThrow(T codec) {
         for (Entry<?> entry : ENTRIES) {
             if (entry.predicate().test(codec)) {

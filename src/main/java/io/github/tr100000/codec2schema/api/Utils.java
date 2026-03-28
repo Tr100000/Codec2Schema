@@ -8,6 +8,7 @@ import io.github.tr100000.codec2schema.impl.map.WrappedDefaultedOptionalFieldMap
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecursiveCodecAccessor;
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public final class Utils {
 
     private static final String RECURSIVE_MAP_CODEC_CLASS_NAME = "class com.mojang.serialization.MapCodec$RecursiveMapCodec";
 
+    @Contract(pure = true)
     public static <T> Optional<List<ValueStringPair<T>>> getPossibleValues(Codec<T> codec) {
         for (CodecValueLister lister : CodecValueLister.LISTERS) {
             List<ValueStringPair<T>> values = lister.possibleValues(codec);
@@ -31,6 +33,7 @@ public final class Utils {
         };
     }
 
+    @Contract(pure = true)
     public static <T> Optional<List<ValueStringPair<T>>> getPossibleValues(MapCodec<T> mapCodec) {
         if (mapCodec instanceof WrappedFieldMapCodec<T> wrappedFieldMapCodec) {
             return getPossibleValues(wrappedFieldMapCodec.original());
@@ -38,6 +41,7 @@ public final class Utils {
         return Optional.empty();
     }
 
+    @Contract(pure = true)
     public static String getFieldNameForDispatch(MapCodec<?> codec, Consumer<String> required) {
         return switch (codec) {
             case WrappedFieldMapCodec<?> wrappedFieldMapCodec -> {
@@ -51,11 +55,13 @@ public final class Utils {
         };
     }
 
+    @Contract(pure = true)
     public static boolean isRecursiveMapCodec(Object obj) {
         return obj.getClass().toString().equals(RECURSIVE_MAP_CODEC_CLASS_NAME);
     }
 
     @SuppressWarnings("unchecked")
+    @Contract(pure = true)
     public static <T> Codec<T> getRecursiveWrapped(Codec.RecursiveCodec<T> codec) {
         return ((RecursiveCodecAccessor<T>)codec).getWrapped().get();
     }

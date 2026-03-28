@@ -54,7 +54,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-public class Codec2Schema {
+public final class Codec2Schema {
+    private Codec2Schema() {}
+
     public static final String MODID = "codec2schema";
     public static final Logger LOGGER = LoggerFactory.getLogger("Codec2Schema");
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

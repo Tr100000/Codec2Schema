@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.Codec2SchemaConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -75,6 +76,7 @@ public class SchemaContext {
         }
     }
 
+    @Contract(pure = true)
     public Optional<String> tryGetDefinitionName(Codec<?> codec) {
         return definitions.entrySet().stream()
                 .filter(e -> codec.equals(e.getValue().codec()))
@@ -82,6 +84,7 @@ public class SchemaContext {
                 .findAny();
     }
 
+    @Contract(value = "_ -> new", pure = true)
     public JsonObject createRef(String name) {
         if (name.isBlank()) throw new IllegalArgumentException("Name must not be blank!");
         JsonObject json = new JsonObject();
@@ -108,6 +111,7 @@ public class SchemaContext {
         return finalName;
     }
 
+    @Contract(mutates = "param1")
     public void addDefinitions(JsonObject json) {
         if (definitions.isEmpty()) return;
 

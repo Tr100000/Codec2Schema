@@ -3,6 +3,7 @@ package io.github.tr100000.codec2schema;
 import com.google.gson.JsonObject;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +16,7 @@ public final class Codec2SchemaConfig {
 
     public static boolean defaultDebugMode = false;
     public static boolean defaultAllowInline = true;
-    public static boolean inlineSingularReference = false;
+    @ApiStatus.Experimental public static boolean inlineSingularReference = false;
 
     public static void load() {
         try {
