@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.4+1.21.11]
+
+### Changed
+- Changed `SchemaExporter` to print the path relative to the game directory instead of the full path when logging
+
+### Fixed
+- Fixed the value part of `SimpleMapCodec`s being completely ignored
+
 ## [0.2.3+1.21.11]
 
 ### Changed

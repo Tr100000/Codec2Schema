@@ -20,8 +20,7 @@ public record UnboundedMapCodecHandler(UnboundedMapCodec<?, ?> codec) implements
         JsonObject json = new JsonObject();
         json.addProperty("type", "object");
         json.add("propertyNames", context.requestDefinition(keyCodec));
-        JsonObject additionalProperties = context.requestDefinition(elementCodec);
-        json.add("additionalProperties", additionalProperties);
+        json.add("additionalProperties", context.requestDefinition(elementCodec));
         return json;
     }
 }

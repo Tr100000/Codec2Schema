@@ -1,2 +1,5 @@
 ### Changed
-- Improve support for ranged codecs and constrained-size string codecs
+- Changed `SchemaExporter` to print the path relative to the game directory instead of the full path when logging
+
+### Fixed
+- Fixed the value part of `SimpleMapCodec`s being completely ignored   

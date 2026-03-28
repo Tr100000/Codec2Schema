@@ -3,6 +3,7 @@ package io.github.tr100000.codec2schema.api;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,10 +13,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SchemaExporter implements BiConsumer<Codec<?>, String> {
-    private Consumer<SchemaContext> options;
+    private @Nullable Consumer<SchemaContext> options;
 
     public void accept(Codec<?> codec, String path) {
-        export(codec, Codec2Schema.EXPORT_ROOT_DIR.resolve(path));
+        export(codec, Codec2Schema.EXPORT_ROOT_DIR.resolve(path), new String[] { path });
     }
 
     public void accept(Codec<?> codec, String... path) {
@@ -23,7 +24,7 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
         for (String str : path) {
             p = p.resolve(str);
         }
-        export(codec, p);
+        export(codec, p, path);
     }
 
     public void setOption(Consumer<SchemaContext> options) {
@@ -49,7 +50,7 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
         return json;
     }
 
-    private void export(Codec<?> codec, Path path) {
+    private void export(Codec<?> codec, Path path, String[] strPath) {
         try {
             Files.createDirectories(path.getParent());
             Files.deleteIfExists(path);
@@ -59,10 +60,10 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
             Files.writeString(path, Codec2Schema.GSON.toJson(json));
             long endTimeMillis = System.currentTimeMillis();
 
-            Codec2Schema.LOGGER.info("Exported codec to {} ({}ms)", path, endTimeMillis - startTimeMillis);
+            Codec2Schema.LOGGER.info("Exported codec to {} ({}ms)", String.join("/", strPath), endTimeMillis - startTimeMillis);
         }
         catch (IOException e) {
-            Codec2Schema.LOGGER.error("Failed to write codec schema to {}", path, e);
+            Codec2Schema.LOGGER.error("Failed to write codec schema to {}", String.join("/", strPath), e);
         }
     }
 }

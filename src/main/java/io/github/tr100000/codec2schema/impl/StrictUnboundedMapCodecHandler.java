@@ -14,13 +14,9 @@ public class StrictUnboundedMapCodecHandler implements CodecHandler<ExtraCodecs.
     @Override
     public JsonObject toSchema(ExtraCodecs.StrictUnboundedMapCodec<?, ?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
-
-        JsonObject propertyNames = context.requestDefinition(codec.keyCodec());
-        json.add("propertyNames", propertyNames);
-
-        JsonObject additionalProperties = context.requestDefinition(codec.elementCodec());
-        json.add("additionalProperties", additionalProperties);
-
+        json.addProperty("type", "object");
+        json.add("propertyNames", context.requestDefinition(codec.keyCodec()));
+        json.add("additionalProperties", context.requestDefinition(codec.elementCodec()));
         return json;
     }
 }
