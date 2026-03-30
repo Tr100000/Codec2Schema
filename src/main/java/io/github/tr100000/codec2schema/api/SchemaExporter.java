@@ -18,7 +18,7 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
     private @Nullable Consumer<SchemaContext> options;
 
     public void accept(Codec<?> codec, String path) {
-        export(codec, Codec2Schema.EXPORT_ROOT_DIR.resolve(path), new String[] { path });
+        export(codec, Codec2Schema.EXPORT_ROOT_DIR.resolve(path), path);
     }
 
     public void accept(Codec<?> codec, String... path) {
@@ -52,14 +52,14 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
         return json;
     }
 
-    private void export(Codec<?> codec, Path path, String[] strPath) {
+    private void export(Codec<?> codec, Path path, String... strPath) {
         try {
             Files.createDirectories(path.getParent());
             Files.deleteIfExists(path);
 
             long startTimeMillis = System.currentTimeMillis();
             JsonObject json = convert(codec);
-            if (Codec2SchemaConfig.inlineSingularReference) {
+            if (Codec2SchemaConfig.INSTANCE.inlineSingularReference()) {
                 json = SingularReferenceInliner.process(json);
             }
             Files.writeString(path, Codec2Schema.GSON.toJson(json));

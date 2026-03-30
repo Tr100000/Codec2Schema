@@ -13,12 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @NullMarked
 public abstract class TypedEntityDataMixin {
     @Inject(method = "codec", at = @At("RETURN"), cancellable = true)
-    private static <T> void codec(Codec<T> codec, CallbackInfoReturnable<Codec<TypedEntityData<T>>> cir) {
+    private static <T> void codec(Codec<T> typeCodec, CallbackInfoReturnable<Codec<TypedEntityData<T>>> cir) {
         Codec<TypedEntityData<T>> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedTypedEntityDataCodec<>() {
             @Override
             public Codec<TypedEntityData<T>> original() {
                 return capturedReturnValue;
+            }
+
+            @Override
+            public Codec<T> typeCodec() {
+                return typeCodec;
             }
 
             @Override

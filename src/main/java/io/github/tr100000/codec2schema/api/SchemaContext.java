@@ -22,8 +22,8 @@ public class SchemaContext {
     public boolean allowInline;
 
     public SchemaContext() {
-        debugMode = Codec2SchemaConfig.defaultDebugMode;
-        allowInline = Codec2SchemaConfig.defaultAllowInline;
+        debugMode = Codec2SchemaConfig.INSTANCE.defaultDebugMode();
+        allowInline = Codec2SchemaConfig.INSTANCE.defaultAllowInline();
     }
 
     public void addDefinition(String name, @Nullable Codec<?> codec, JsonObject json) {

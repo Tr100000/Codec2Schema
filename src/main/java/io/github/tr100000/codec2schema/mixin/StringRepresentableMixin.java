@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 @NullMarked
 public interface StringRepresentableMixin {
     @Inject(method = "fromEnumWithMapping", at = @At("RETURN"), cancellable = true)
-    private static <E extends Enum<E> & StringRepresentable> void fromEnumWithMapping(Supplier<E[]> supplier, Function<String, String> function, CallbackInfoReturnable<StringRepresentable.EnumCodec<E>> cir, @Local(name = "valueArray") E[] enums, @Local(name = "lookupFunction") Function<String, E> function2) {
+    private static <E extends Enum<E> & StringRepresentable> void fromEnumWithMapping(Supplier<E[]> values, Function<String, String> converter, CallbackInfoReturnable<StringRepresentable.EnumCodec<E>> cir, @Local(name = "valueArray") E[] valueArray, @Local(name = "lookupFunction") Function<String, E> lookupFunction) {
         StringRepresentable.EnumCodec<E> capturedReturnValue = cir.getReturnValue();
-        cir.setReturnValue(new WrappedEnumCodec<>(enums, function2) {
+        cir.setReturnValue(new WrappedEnumCodec<>(valueArray, lookupFunction) {
             @Override
             public Codec<E> original() {
                 return capturedReturnValue;
@@ -32,7 +32,7 @@ public interface StringRepresentableMixin {
 
             @Override
             public List<ValueStringPair<E>> possibleValues() {
-                return toStringList(enums, value -> function.apply(value.getSerializedName()));
+                return toStringList(valueArray, value -> converter.apply(value.getSerializedName()));
             }
 
             @Override
@@ -43,7 +43,7 @@ public interface StringRepresentableMixin {
     }
 
     @Inject(method = "fromValues", at = @At("RETURN"), cancellable = true)
-    private static <T extends StringRepresentable> void fromValues(Supplier<T[]> supplier, CallbackInfoReturnable<Codec<T>> cir, @Local(name = "valueArray") T[] enumValues) {
+    private static <T extends StringRepresentable> void fromValues(Supplier<T[]> values, CallbackInfoReturnable<Codec<T>> cir, @Local(name = "valueArray") T[] valueArray) {
         Codec<T> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedStringRepresentableCodec<>() {
             @Override
@@ -53,7 +53,7 @@ public interface StringRepresentableMixin {
 
             @Override
             public List<ValueStringPair<T>> possibleValues() {
-                return toStringList(enumValues, StringRepresentable::getSerializedName);
+                return toStringList(valueArray, StringRepresentable::getSerializedName);
             }
 
             @Override

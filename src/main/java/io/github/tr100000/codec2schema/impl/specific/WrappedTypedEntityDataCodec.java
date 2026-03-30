@@ -10,6 +10,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public interface WrappedTypedEntityDataCodec<IdType> extends Codec<TypedEntityData<IdType>> {
     Codec<TypedEntityData<IdType>> original();
+    Codec<IdType> typeCodec();
 
     @Override
     default <T> DataResult<Pair<TypedEntityData<IdType>, T>> decode(DynamicOps<T> ops, T input) {

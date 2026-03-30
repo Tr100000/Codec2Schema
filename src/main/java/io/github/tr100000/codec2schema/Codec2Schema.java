@@ -44,7 +44,9 @@ import io.github.tr100000.codec2schema.impl.wrapped.WrappedCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -63,11 +65,31 @@ public final class Codec2Schema {
 
     public static final Path EXPORT_ROOT_DIR = FabricLoader.getInstance().getGameDir().resolve(MODID);
 
-    @ApiStatus.Internal
-    public static void registerHandlers(List<String> entrypointKeys) {
-        for (String key : entrypointKeys) {
-            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::earlyRegisterHandlers);
+    private static String getEntrypointKey(PluginSide side) {
+        return switch (side) {
+            case MAIN -> "codec2schema:main";
+            case CLIENT -> "codec2schema:client";
+        };
+    }
+
+    private static List<Codec2SchemaPlugin> getFilteredPlugins(PluginSide... sides) {
+        List<Codec2SchemaPlugin> plugins = new ObjectArrayList<>();
+        for (PluginSide side : sides) {
+            List<Codec2SchemaPlugin> sidedPlugins = FabricLoader.getInstance().getEntrypointContainers(getEntrypointKey(side), Codec2SchemaPlugin.class)
+                    .stream()
+                    .filter(c -> Codec2SchemaConfig.INSTANCE.shouldRunPlugin(c.getProvider().getMetadata().getId(), side))
+                    .map(EntrypointContainer::getEntrypoint)
+                    .toList();
+            plugins.addAll(sidedPlugins);
         }
+        return plugins;
+    }
+
+    @ApiStatus.Internal
+    public static void registerHandlers(PluginSide... sides) {
+        List<Codec2SchemaPlugin> plugins = getFilteredPlugins(sides);
+
+        plugins.forEach(Codec2SchemaPlugin::earlyRegisterHandlers);
 
         CodecValueLister.LISTERS.add(new CodecWithValuePairsLister());
 
@@ -78,9 +100,7 @@ public final class Codec2Schema {
         registerSpecificMapCodecHandlers();
         registerBaseMapCodecHandlers();
 
-        for (String key : entrypointKeys) {
-            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, Codec2SchemaPlugin::registerHandlers);
-        }
+        plugins.forEach(Codec2SchemaPlugin::registerHandlers);
     }
 
     private static void registerSpecificCodecHandlers() {
@@ -140,6 +160,8 @@ public final class Codec2Schema {
 
     @ApiStatus.Internal
     public static void afterBootstrap() {
+        Codec2SchemaConfig.load();
+
         ClientDelegate.INSTANCE.registerHandlers();
 
         try {
@@ -155,15 +177,11 @@ public final class Codec2Schema {
         LOGGER.info("Finished all schema generation in {}ms", System.currentTimeMillis() - startTimeMillis);
     }
 
-    public static void generateSchemas(List<String> entrypointKeys) {
-        Codec2SchemaConfig.load();
-
+    public static void generateSchemas(PluginSide... entrypointKeys) {
         SchemaExporter exporter = new SchemaExporter();
-        for (String key : entrypointKeys) {
-            FabricLoader.getInstance().invokeEntrypoints(key, Codec2SchemaPlugin.class, entrypoint -> {
-                entrypoint.generateSchemas(exporter);
-                exporter.clearOptions();
-            });
-        }
+        getFilteredPlugins(entrypointKeys).forEach(plugin -> {
+            plugin.generateSchemas(exporter);
+            exporter.clearOptions();
+        });
     }
 }

@@ -1,2 +1,9 @@
+### Added
+- Added a config option to disable plugins
+
 ### Changed
-- Changed `SchemaExporter` to print the path relative to the game directory instead of the full path when logging
+- The config now uses codecs for serialization
+
+### Fixed
+- Fixed wrong mixin target in `ExtraCodecsMixin`
+- Fixed a bunch of mixin warnings

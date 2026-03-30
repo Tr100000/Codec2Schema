@@ -98,6 +98,8 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataWorldgenCodec(exporter, WorldPreset.DIRECT_CODEC, "world_preset.json");
         exportDataWorldgenCodec(exporter, FlatLevelGeneratorPreset.DIRECT_CODEC, "flat_level_generator_preset.json");
         exportDataWorldgenCodec(exporter, MultiNoiseBiomeSourceParameterList.DIRECT_CODEC, "multi_noise_biome_source_parameter_list.json");
+
+        exporter.accept(Codec2SchemaConfig.CODEC, "config", Codec2Schema.MODID + ".json");
     }
 
     private void exportDataCodec(SchemaExporter exporter, Codec<?> codec, String path) {

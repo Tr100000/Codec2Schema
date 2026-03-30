@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ComponentSerialization.class)
 public abstract class ComponentSerializationMixin {
     @Inject(method = "flatRestrictedCodec", at = @At("RETURN"), cancellable = true)
-    private static void flatRestrictedCodec(int i, CallbackInfoReturnable<Codec<Component>> cir) {
+    private static void flatRestrictedCodec(int maxFlatSize, CallbackInfoReturnable<Codec<Component>> cir) {
         Codec<Component> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedRestrictedComponentCodec() {
             @Override
@@ -22,7 +22,7 @@ public abstract class ComponentSerializationMixin {
 
             @Override
             public int maxSize() {
-                return i;
+                return maxFlatSize;
             }
 
             @Override

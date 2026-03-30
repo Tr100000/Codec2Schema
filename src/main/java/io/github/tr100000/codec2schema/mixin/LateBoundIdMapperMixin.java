@@ -21,7 +21,7 @@ public abstract class LateBoundIdMapperMixin<I, V> {
     private BiMap<I, V> idToValue;
 
     @WrapOperation(method = "codec", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ExtraCodecs;idResolverCodec(Lcom/mojang/serialization/Codec;Ljava/util/function/Function;Ljava/util/function/Function;)Lcom/mojang/serialization/Codec;"))
-    private Codec<V> codec(Codec<I> codec, Function<I, V> function, Function<V, I> function2, Operation<Codec<V>> original) {
+    private Codec<V> codec(Codec<I> value, Function<I, V> fromId, Function<V, I> toId, Operation<Codec<V>> original) {
         Codec<I> wrappedCodec = new CodecWithValuePairs<>() {
             @Override
             public List<ValueStringPair<I>> possibleValues() {
@@ -32,14 +32,14 @@ public abstract class LateBoundIdMapperMixin<I, V> {
 
             @Override
             public Codec<I> original() {
-                return codec;
+                return value;
             }
 
             @Override
             public Codec<?> fallbackCodec() {
-                return codec;
+                return value;
             }
         };
-        return original.call(wrappedCodec, function, function2);
+        return original.call(wrappedCodec, fromId, toId);
     }
 }
