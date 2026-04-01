@@ -106,8 +106,8 @@ public abstract class MapCodecMixin<A> {
         });
     }
 
-    @Inject(method = "unitCodec(Ljava/lang/Object;)Lcom/mojang/serialization/Codec;", at = @At("RETURN"), cancellable = true)
-    private static <A> void unitCodec(A value, CallbackInfoReturnable<Codec<A>> cir) {
+    @Inject(method = "unitCodec(Ljava/util/function/Supplier;)Lcom/mojang/serialization/Codec;", at = @At("RETURN"), cancellable = true)
+    private static <A> void unitCodec(Supplier<A> value, CallbackInfoReturnable<Codec<A>> cir) {
         Codec<A> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedUnitCodec<>() {
             @Override
