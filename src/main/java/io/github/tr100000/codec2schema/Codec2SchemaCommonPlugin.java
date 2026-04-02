@@ -15,6 +15,7 @@ import net.minecraft.world.clock.WorldClock;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.animal.chicken.ChickenSoundVariant;
 import net.minecraft.world.entity.animal.chicken.ChickenVariant;
+import net.minecraft.world.entity.animal.cow.CowSoundVariant;
 import net.minecraft.world.entity.animal.cow.CowVariant;
 import net.minecraft.world.entity.animal.feline.CatSoundVariant;
 import net.minecraft.world.entity.animal.feline.CatVariant;
@@ -75,6 +76,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, ChatType.DIRECT_CODEC, "chat_type.json");
         exportDataCodec(exporter, ChickenSoundVariant.DIRECT_CODEC, "chicken_sound_variant.json");
         exportDataCodec(exporter, ChickenVariant.DIRECT_CODEC, "chicken_variant.json");
+        exportDataCodec(exporter, CowSoundVariant.DIRECT_CODEC, "cow_sound_variant.json");
         exportDataCodec(exporter, CowVariant.DIRECT_CODEC, "cow_variant.json");
         exportDataCodec(exporter, DamageType.DIRECT_CODEC, "damage_type.json");
         exportDataCodec(exporter, Dialog.DIRECT_CODEC, "dialog.json");
