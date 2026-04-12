@@ -65,6 +65,10 @@ public final class Codec2Schema {
 
     public static final Path EXPORT_ROOT_DIR = FabricLoader.getInstance().getGameDir().resolve(MODID);
 
+    public static String version() {
+        return FabricLoader.getInstance().getModContainer(MODID).orElseThrow().getMetadata().getVersion().getFriendlyString();
+    }
+
     private static String getEntrypointKey(PluginSide side) {
         return switch (side) {
             case MAIN -> "codec2schema:main";

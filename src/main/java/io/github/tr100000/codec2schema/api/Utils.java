@@ -2,12 +2,14 @@ package io.github.tr100000.codec2schema.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.EitherCodec;
 import com.mojang.serialization.codecs.OptionalFieldCodec;
 import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedDefaultedOptionalFieldMapCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodec;
 import io.github.tr100000.codec2schema.mixin.OptionalFieldCodecAccessor;
 import io.github.tr100000.codec2schema.mixin.RecursiveCodecAccessor;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public final class Utils {
     private static final String RECURSIVE_MAP_CODEC_CLASS_NAME = "class com.mojang.serialization.MapCodec$RecursiveMapCodec";
 
     @Contract(pure = true)
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> Optional<List<ValueStringPair<T>>> getPossibleValues(Codec<T> codec) {
         for (CodecValueLister lister : CodecValueLister.LISTERS) {
             List<ValueStringPair<T>> values = lister.possibleValues(codec);
@@ -29,6 +32,19 @@ public final class Utils {
         return switch (codec) {
             case WrappedCodec<T> wrappedCodec -> getPossibleValues(wrappedCodec.original());
             case Codec.RecursiveCodec<T> recursiveCodec -> getPossibleValues(getRecursiveWrapped(recursiveCodec));
+            case EitherCodec eitherCodec -> {
+                Optional<List<ValueStringPair<?>>> firstValues = getPossibleValues(eitherCodec.first());
+                Optional<List<ValueStringPair<?>>> secondValues = getPossibleValues(eitherCodec.first());
+
+                if (firstValues.isPresent() || secondValues.isPresent()) {
+                    List<ValueStringPair<?>> values = new ObjectArrayList<>();
+                    firstValues.ifPresent(values::addAll);
+                    secondValues.ifPresent(values::addAll);
+
+                    if (!values.isEmpty()) yield Optional.of((List)values);
+                }
+                yield Optional.empty();
+            }
             default -> Optional.empty();
         };
     }

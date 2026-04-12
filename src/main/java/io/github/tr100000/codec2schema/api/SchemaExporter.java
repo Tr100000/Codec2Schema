@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.Codec2SchemaConfig;
 import io.github.tr100000.codec2schema.SingularReferenceInliner;
+import net.minecraft.SharedConstants;
 import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
@@ -48,6 +49,12 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
         if (options != null) options.accept(context);
         JsonObject json = context.requestDefinition(codec);
         json.addProperty("$schema", "https://json-schema.org/draft-07/schema");
+        if (Codec2SchemaConfig.INSTANCE.addExportedWith()) {
+            JsonObject exportedWith = new JsonObject();
+            exportedWith.addProperty("minecraft", SharedConstants.getCurrentVersion().name());
+            exportedWith.addProperty("codec2schema", Codec2Schema.version());
+            json.add("exportedWith", exportedWith);
+        }
         context.addDefinitions(json);
         return json;
     }

@@ -17,11 +17,12 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowInline, List<PluginMatch> pluginsToDisable, @ApiStatus.Experimental boolean inlineSingularReference) {
+public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowInline, boolean addExportedWith, List<PluginMatch> pluginsToDisable, @ApiStatus.Experimental boolean inlineSingularReference) {
     public static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("codec2schema.json");
     public static final Codec<Codec2SchemaConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             optionalField(Codec.BOOL, "defaultDebugMode", false).forGetter(Codec2SchemaConfig::defaultDebugMode),
             optionalField(Codec.BOOL, "defaultAllowInline", true).forGetter(Codec2SchemaConfig::defaultAllowInline),
+            optionalField(Codec.BOOL, "addExportedWith", false).forGetter(Codec2SchemaConfig::addExportedWith),
             optionalField(PluginMatch.CODEC.listOf(), "pluginsToDisable", List.of()).forGetter(Codec2SchemaConfig::pluginsToDisable),
             optionalField(Codec.BOOL, "inlineSingularReference", false).forGetter(Codec2SchemaConfig::inlineSingularReference)
     ).apply(instance, Codec2SchemaConfig::new));
@@ -30,7 +31,7 @@ public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowI
         return codec.optionalFieldOf(name).xmap(o -> o.orElse(defaultValue), Optional::ofNullable);
     }
 
-    public static Codec2SchemaConfig INSTANCE = new Codec2SchemaConfig(true, false, List.of(), false);
+    public static Codec2SchemaConfig INSTANCE = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).getOrThrow();
 
     public boolean shouldRunPlugin(String modid, PluginSide side) {
         return pluginsToDisable.stream().noneMatch(p -> p.matches(modid, side));
@@ -44,7 +45,7 @@ public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowI
             }
 
             JsonObject json = Codec2Schema.GSON.fromJson(Files.readString(PATH), JsonObject.class);
-            INSTANCE = CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
+            INSTANCE = CODEC.parse(JsonOps.INSTANCE, json).getOrThrow();
 
             save();
         }
