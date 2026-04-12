@@ -31,6 +31,7 @@ public class DispatchedMapCodecHandler<K, V> implements CodecHandler<DispatchedM
         else {
             JsonObject json = new JsonObject();
             json.addProperty("type", "object");
+            if (context.debugMode) json.addProperty("_error", "No possible values found");
             return json;
         }
     }
