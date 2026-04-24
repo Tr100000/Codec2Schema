@@ -31,6 +31,10 @@ public final class JsonUtils {
         }
     }
 
+    public static void addAllPropertiesFrom(JsonObject json, JsonObject other) {
+        other.entrySet().forEach(entry -> json.add(entry.getKey(), entry.getValue()));
+    }
+
     @Contract("_, _, _ -> new")
     public static JsonObject schemaIfPropertyEquals(String propertyName, Object value, JsonObject thenSchema) {
         return schemaIfPropertyEquals(propertyName, value, thenSchema, null);
