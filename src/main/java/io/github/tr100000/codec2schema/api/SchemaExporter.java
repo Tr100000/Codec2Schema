@@ -47,8 +47,9 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
     private JsonObject convert(Codec<?> codec) {
         SchemaContext context = new SchemaContext();
         if (options != null) options.accept(context);
-        JsonObject json = context.requestDefinition(codec);
+        JsonObject json = new JsonObject();
         json.addProperty("$schema", "https://json-schema.org/draft-07/schema");
+        JsonUtils.addAllPropertiesFrom(json, context.requestDefinition(codec));
         if (Codec2SchemaConfig.INSTANCE.addExportedWith()) {
             JsonObject exportedWith = new JsonObject();
             exportedWith.addProperty("minecraft", SharedConstants.getCurrentVersion().name());
