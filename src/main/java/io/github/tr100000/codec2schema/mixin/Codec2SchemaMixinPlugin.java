@@ -23,9 +23,8 @@ public class Codec2SchemaMixinPlugin implements IMixinConfigPlugin {
             if (mixinClassName.endsWith("CustomUnbakedBlockStateModelRegistry"))
                 return ModUtils.hasFabricModelLoadingApi();
         }
-        else {
-            return true;
-        }
+
+        return true;
     }
 
     @Override
