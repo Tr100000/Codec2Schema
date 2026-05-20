@@ -8,6 +8,7 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import io.github.tr100000.codec2schema.api.codec.WrappedMapCodec;
 import io.github.tr100000.codec2schema.api.codec.WrappedUnitCodec;
+import io.github.tr100000.codec2schema.impl.map.WrappedAssumeMapUnsafeMapCodec;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +19,22 @@ import java.util.function.Supplier;
 
 @Mixin(MapCodec.class)
 public abstract class MapCodecMixin<A> {
+    @Inject(method = "assumeMapUnsafe", at = @At("RETURN"), cancellable = true)
+    private static <A> void assumeMapUnsafe(Codec<A> codec, CallbackInfoReturnable<MapCodec<A>> cir) {
+        MapCodec<A> capturedReturnValue = cir.getReturnValue();
+        cir.setReturnValue(new WrappedAssumeMapUnsafeMapCodec<>() {
+            @Override
+            public MapCodec<A> original() {
+                return capturedReturnValue;
+            }
+
+            @Override
+            public Codec<A> originalBeforeAssume() {
+                return codec;
+            }
+        });
+    }
+
     @Inject(method = "xmap", at = @At("RETURN"), cancellable = true)
     @SuppressWarnings("unchecked")
     private <S> void xmap(Function<? super A, ? extends S> to, Function<? super S, ? extends A> from, CallbackInfoReturnable<MapCodec<S>> cir) {

@@ -10,4 +10,12 @@ public final class ModUtils {
     public static boolean hasFabricModelLoadingApi() {
         return FabricLoader.getInstance().isModLoaded("fabric-model-loading-api-v1");
     }
+
+    public static boolean hasFabricDimensionsApi() {
+        return FabricLoader.getInstance().isModLoaded("fabric-dimensions-v1");
+    }
+
+    public static boolean hasTrUtils() {
+        return FabricLoader.getInstance().isModLoaded("trutils");
+    }
 }
