@@ -24,10 +24,13 @@ import io.github.tr100000.codec2schema.impl.UnboundedMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.XorCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.ComponentSerializationCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.EitherMapCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.KeyDispatchCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.MapCodecCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.OptionalFieldCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.PairMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.SimpleMapCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.WrappedAssumeMapUnsafeMapCodecHandler;
+import io.github.tr100000.codec2schema.impl.map.WrappedDispatchOptionalValueMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.WrappedFieldMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.map.WrappedUnitMapCodecHandler;
 import io.github.tr100000.codec2schema.impl.specific.DataComponentPatchCodecHandler;
@@ -97,6 +100,8 @@ public final class Codec2Schema {
 
         CodecValueLister.LISTERS.add(new CodecWithValuePairsLister());
 
+        LOGGER.info("Registering codec handlers");
+
         registerSpecificCodecHandlers();
         registerBaseCodecHandlers();
         registerSchemaModifiers();
@@ -156,6 +161,11 @@ public final class Codec2Schema {
         MapCodecHandlerRegistry.register(SimpleMapCodecHandler::predicate, SimpleMapCodecHandler::create);
         MapCodecHandlerRegistry.register(EitherMapCodecHandler::predicate, EitherMapCodecHandler::new);
         MapCodecHandlerRegistry.register(PairMapCodecHandler::predicate, PairMapCodecHandler::new);
+
+        MapCodecHandlerRegistry.register(KeyDispatchCodecHandler::predicate, KeyDispatchCodecHandler::create);
+        MapCodecHandlerRegistry.register(WrappedDispatchOptionalValueMapCodecHandler::predicate, WrappedDispatchOptionalValueMapCodecHandler::create);
+
+        MapCodecHandlerRegistry.register(WrappedAssumeMapUnsafeMapCodecHandler::predicate, WrappedAssumeMapUnsafeMapCodecHandler::new);
     }
 
     private static void registerSchemaModifiers() {
