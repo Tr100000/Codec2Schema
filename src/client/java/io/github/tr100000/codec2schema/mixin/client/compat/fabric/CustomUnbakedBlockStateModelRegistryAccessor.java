@@ -1,5 +1,5 @@
-//package io.github.tr100000.codec2schema.mixin.client.compat.fabric;
-//
+package io.github.tr100000.codec2schema.mixin.client.compat.fabric;
+
 //import com.mojang.datafixers.util.Either;
 //import com.mojang.serialization.MapCodec;
 //import net.fabricmc.fabric.api.client.model.loading.v1.CustomUnbakedBlockStateModel;

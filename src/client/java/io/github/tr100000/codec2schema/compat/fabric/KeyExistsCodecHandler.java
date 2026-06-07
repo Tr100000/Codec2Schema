@@ -1,5 +1,5 @@
-//package io.github.tr100000.codec2schema.compat.fabric;
-//
+package io.github.tr100000.codec2schema.compat.fabric;
+
 //import com.google.gson.JsonArray;
 //import com.google.gson.JsonObject;
 //import com.mojang.serialization.MapCodec;
