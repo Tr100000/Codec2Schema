@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.Codec2SchemaConfig;
+import io.github.tr100000.codec2schema.ExportContext;
 import io.github.tr100000.codec2schema.SingularReferenceInliner;
 import net.minecraft.SharedConstants;
 import org.jspecify.annotations.Nullable;
@@ -16,6 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class SchemaExporter implements BiConsumer<Codec<?>, String> {
+    private @Nullable ExportContext exportContext;
     private @Nullable Consumer<SchemaContext> options;
 
     public void accept(Codec<?> codec, String path) {
@@ -28,6 +30,10 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
             p = p.resolve(str);
         }
         export(codec, p, path);
+    }
+
+    public void setExportContext(ExportContext exportContext) {
+        this.exportContext = exportContext;
     }
 
     public void setOption(Consumer<SchemaContext> options) {
@@ -54,6 +60,9 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
             JsonObject exportedWith = new JsonObject();
             exportedWith.addProperty("minecraft", SharedConstants.getCurrentVersion().name());
             exportedWith.addProperty("codec2schema", Codec2Schema.version());
+            if (exportContext != null) {
+                exportedWith.addProperty("exportedBy", exportContext.mod().getMetadata().getId());
+            }
             json.add("exportedWith", exportedWith);
         }
         context.addDefinitions(json);
@@ -73,7 +82,9 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
             Files.writeString(path, Codec2Schema.GSON.toJson(json));
             long endTimeMillis = System.currentTimeMillis();
 
-            Codec2Schema.LOGGER.info("Exported codec to {} ({}ms)", String.join("/", strPath), endTimeMillis - startTimeMillis);
+            if (Codec2Schema.LOGGER.isInfoEnabled()) {
+                Codec2Schema.LOGGER.info("Exported codec to {} ({}ms)", String.join("/", strPath), endTimeMillis - startTimeMillis);
+            }
         }
         catch (IOException e) {
             Codec2Schema.LOGGER.error("Failed to write codec schema to {}", String.join("/", strPath), e);
