@@ -49,7 +49,6 @@ import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHand
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -79,13 +78,13 @@ public final class Codec2Schema {
         };
     }
 
-    private static List<Codec2SchemaPlugin> getFilteredPlugins(PluginSide... sides) {
-        List<Codec2SchemaPlugin> plugins = new ObjectArrayList<>();
+    private static List<ExportContext> getFilteredPlugins(PluginSide... sides) {
+        List<ExportContext> plugins = new ObjectArrayList<>();
         for (PluginSide side : sides) {
-            List<Codec2SchemaPlugin> sidedPlugins = FabricLoader.getInstance().getEntrypointContainers(getEntrypointKey(side), Codec2SchemaPlugin.class)
+            List<ExportContext> sidedPlugins = FabricLoader.getInstance().getEntrypointContainers(getEntrypointKey(side), Codec2SchemaPlugin.class)
                     .stream()
                     .filter(c -> Codec2SchemaConfig.INSTANCE.shouldRunPlugin(c.getProvider().getMetadata().getId(), side))
-                    .map(EntrypointContainer::getEntrypoint)
+                    .map(container -> new ExportContext(container.getEntrypoint(), container.getProvider(), side))
                     .toList();
             plugins.addAll(sidedPlugins);
         }
@@ -94,9 +93,9 @@ public final class Codec2Schema {
 
     @ApiStatus.Internal
     public static void registerHandlers(PluginSide... sides) {
-        List<Codec2SchemaPlugin> plugins = getFilteredPlugins(sides);
+        List<ExportContext> plugins = getFilteredPlugins(sides);
 
-        plugins.forEach(Codec2SchemaPlugin::earlyRegisterHandlers);
+        plugins.forEach(context -> context.plugin().earlyRegisterHandlers());
 
         CodecValueLister.LISTERS.add(new CodecWithValuePairsLister());
 
@@ -109,7 +108,7 @@ public final class Codec2Schema {
         registerSpecificMapCodecHandlers();
         registerBaseMapCodecHandlers();
 
-        plugins.forEach(Codec2SchemaPlugin::registerHandlers);
+        plugins.forEach(context -> context.plugin().registerHandlers());
     }
 
     private static void registerSpecificCodecHandlers() {
@@ -193,8 +192,9 @@ public final class Codec2Schema {
 
     public static void generateSchemas(PluginSide... entrypointKeys) {
         SchemaExporter exporter = new SchemaExporter();
-        getFilteredPlugins(entrypointKeys).forEach(plugin -> {
-            plugin.generateSchemas(exporter);
+        getFilteredPlugins(entrypointKeys).forEach(context -> {
+            exporter.setExportContext(context);
+            context.plugin().generateSchemas(exporter);
             exporter.clearOptions();
         });
     }
