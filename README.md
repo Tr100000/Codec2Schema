@@ -8,7 +8,7 @@ Codecs are Mojang's way of easily serializing data to and from JSON. They define
 
 ## What is a JSON Schema?
 
-A JSON schema 
+A JSON schema is a file that describes how JSON files should be structured, and can be used by IDEs to provide autocomplete when creating or editing JSON files.
 
 ## About This Mod
 
