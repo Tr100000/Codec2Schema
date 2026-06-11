@@ -6,6 +6,7 @@ import io.github.tr100000.codec2schema.Codec2Schema;
 import io.github.tr100000.codec2schema.Codec2SchemaConfig;
 import io.github.tr100000.codec2schema.ExportContext;
 import io.github.tr100000.codec2schema.SingularReferenceInliner;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.SharedConstants;
 import org.jspecify.annotations.Nullable;
 
@@ -61,7 +62,10 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
             exportedWith.addProperty("minecraft", SharedConstants.getCurrentVersion().name());
             exportedWith.addProperty("codec2schema", Codec2Schema.version());
             if (exportContext != null) {
-                exportedWith.addProperty("exportedBy", exportContext.mod().getMetadata().getId());
+                JsonObject exportedBy = JsonUtils.getOrCreateObject(exportedWith, "exportedBy");
+                exportedBy.addProperty("pluginId", exportContext.getPluginId().toString());
+                ModMetadata exportedByMetadata = exportContext.mod().getMetadata();
+                exportedBy.addProperty("modVersion", exportedByMetadata.getVersion().getFriendlyString());
             }
             json.add("exportedWith", exportedWith);
         }

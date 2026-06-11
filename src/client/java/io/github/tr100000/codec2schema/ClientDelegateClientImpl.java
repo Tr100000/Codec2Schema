@@ -6,11 +6,11 @@ import org.jspecify.annotations.NullMarked;
 public class ClientDelegateClientImpl extends ClientDelegate {
     @Override
     public void registerHandlers() {
-        Codec2Schema.registerHandlers(PluginSide.MAIN, PluginSide.CLIENT);
+        Codec2Schema.registerHandlers(PluginSide.COMMON, PluginSide.CLIENT);
     }
 
     @Override
     public void generateSchemas() {
-        Codec2Schema.generateSchemas(PluginSide.MAIN, PluginSide.CLIENT);
+        Codec2Schema.generateSchemas(PluginSide.COMMON, PluginSide.CLIENT);
     }
 }

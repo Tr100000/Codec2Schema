@@ -124,8 +124,6 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
 
         checkExportedAll(RegistryDataLoader.WORLDGEN_REGISTRIES);
         checkExportedAll(RegistryDataLoader.DIMENSION_REGISTRIES);
-
-        exporter.accept(Codec2SchemaConfig.CODEC, "config", Codec2Schema.MODID + ".json");
     }
 
     private void exportDataCodec(SchemaExporter exporter, Codec<?> codec, String path) {

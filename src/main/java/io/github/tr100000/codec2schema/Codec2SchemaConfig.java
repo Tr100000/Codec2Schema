@@ -9,6 +9,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
@@ -33,8 +34,8 @@ public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowI
 
     public static Codec2SchemaConfig INSTANCE = CODEC.parse(JsonOps.INSTANCE, new JsonObject()).getOrThrow();
 
-    public boolean shouldRunPlugin(String modid, PluginSide side) {
-        return pluginsToDisable.stream().noneMatch(p -> p.matches(modid, side));
+    public boolean shouldRunPlugin(Identifier pluginId, PluginSide side) {
+        return pluginsToDisable.stream().noneMatch(p -> p.matches(pluginId, side));
     }
 
     public static void load() {
@@ -67,37 +68,42 @@ public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowI
     }
 
     public interface PluginMatch {
-        Codec<PluginMatch> CODEC = Codec.either(SidedPluginMatch.CODEC, ModPluginMatch.CODEC)
+        Codec<PluginMatch> CODEC = Codec.either(ModSidedPluginMatch.CODEC, IdPluginMatch.CODEC)
                 .flatComapMap(
                         Either::unwrap,
                         pluginMatch -> switch (pluginMatch) {
-                            case SidedPluginMatch sided -> DataResult.success(Either.left(sided));
-                            case ModPluginMatch mod -> DataResult.success(Either.right(mod));
+                            case ModSidedPluginMatch sided -> DataResult.success(Either.left(sided));
+                            case IdPluginMatch mod -> DataResult.success(Either.right(mod));
                             default -> DataResult.error(() -> "uh oh");
                         }
                 );
 
-        boolean matches(String modid, PluginSide side);
+        boolean matches(Identifier pluginId, PluginSide side);
     }
 
-    private record SidedPluginMatch(String modid, PluginSide side) implements PluginMatch {
-        public static final Codec<SidedPluginMatch> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.STRING.fieldOf("mod").forGetter(SidedPluginMatch::modid),
-                PluginSide.CODEC.fieldOf("side").forGetter(SidedPluginMatch::side)
-        ).apply(instance, SidedPluginMatch::new));
+    private record ModSidedPluginMatch(String modid, PluginSide side) implements PluginMatch {
+        public static final Codec<ModSidedPluginMatch> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.STRING.fieldOf("mod").forGetter(ModSidedPluginMatch::modid),
+                PluginSide.CODEC.fieldOf("side").forGetter(ModSidedPluginMatch::side)
+        ).apply(instance, ModSidedPluginMatch::new));
 
         @Override
-        public boolean matches(String modid, PluginSide side) {
-            return this.modid.equals(modid) && this.side == side;
+        public boolean matches(Identifier pluginId, PluginSide side) {
+            return this.modid.equals(pluginId.getNamespace()) && this.side == side;
         }
     }
 
-    private record ModPluginMatch(String modid) implements PluginMatch {
-        public static final Codec<ModPluginMatch> CODEC = Codec.STRING.xmap(ModPluginMatch::new, ModPluginMatch::modid);
+    private record IdPluginMatch(String id) implements PluginMatch {
+        public static final Codec<IdPluginMatch> CODEC = Codec.STRING.xmap(IdPluginMatch::new, IdPluginMatch::id);
 
         @Override
-        public boolean matches(String modid, PluginSide side) {
-            return this.modid.equals(modid);
+        public boolean matches(Identifier pluginId, PluginSide side) {
+            if (id.contains(":")) {
+                return id.equals(pluginId.toString());
+            }
+            else {
+                return id.equals(pluginId.getNamespace());
+            }
         }
     }
 }
