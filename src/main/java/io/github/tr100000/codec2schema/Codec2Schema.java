@@ -49,6 +49,9 @@ import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHand
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
@@ -56,7 +59,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public final class Codec2Schema {
     private Codec2Schema() {}
@@ -73,7 +79,7 @@ public final class Codec2Schema {
 
     private static String getEntrypointKey(PluginSide side) {
         return switch (side) {
-            case MAIN -> "codec2schema:main";
+            case COMMON -> "codec2schema:main";
             case CLIENT -> "codec2schema:client";
         };
     }
@@ -83,12 +89,35 @@ public final class Codec2Schema {
         for (PluginSide side : sides) {
             List<ExportContext> sidedPlugins = FabricLoader.getInstance().getEntrypointContainers(getEntrypointKey(side), Codec2SchemaPlugin.class)
                     .stream()
-                    .filter(c -> Codec2SchemaConfig.INSTANCE.shouldRunPlugin(c.getProvider().getMetadata().getId(), side))
+                    .filter(c -> shouldRunPlugin(c, side))
                     .map(container -> new ExportContext(container.getEntrypoint(), container.getProvider(), side))
                     .toList();
             plugins.addAll(sidedPlugins);
         }
+
+        Set<Identifier> uniquePluginIds = new HashSet<>();
+        List<Identifier> duplicates = plugins.stream()
+                .map(ExportContext::getPluginId)
+                .filter(n -> !uniquePluginIds.add(n))
+                .toList();
+
+        if (!duplicates.isEmpty()) {
+            duplicates.forEach(duplicateId -> LOGGER.error("Duplicate id found: {}", duplicateId));
+            throw new IllegalStateException("Duplicate plugin ids found!");
+        }
+
+        uniquePluginIds.forEach(id -> LOGGER.debug("Running plugin {}", id));
+
         return plugins;
+    }
+
+    private static boolean shouldRunPlugin(EntrypointContainer<Codec2SchemaPlugin> container, PluginSide side) {
+        return container.getEntrypoint().shouldRun() && Codec2SchemaConfig.INSTANCE.shouldRunPlugin(getPluginId(container.getEntrypoint(), container.getProvider(), side), side);
+    }
+
+    public static Identifier getPluginId(Codec2SchemaPlugin plugin, ModContainer modContainer, PluginSide side) {
+        Identifier id = plugin.getId();
+        return Objects.requireNonNullElseGet(id, () -> Identifier.fromNamespaceAndPath(modContainer.getMetadata().getId(), side.getSerializedName()));
     }
 
     @ApiStatus.Internal

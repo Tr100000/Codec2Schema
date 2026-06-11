@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;
 
 public enum PluginSide implements StringRepresentable {
-    MAIN("main"),
+    COMMON("common"),
     CLIENT("client");
 
     public static final Codec<PluginSide> CODEC = StringRepresentable.fromEnum(PluginSide::values);
