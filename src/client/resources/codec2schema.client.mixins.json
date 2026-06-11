@@ -5,6 +5,9 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
   ],
+  "mixins": [
+    "compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
