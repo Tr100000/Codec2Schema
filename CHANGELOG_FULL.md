@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.6+26.2-pre-6]
+
+**Fabric Model Loading API support has been re-enabled in this release**
+
+### Added
+- `exportedWith` now contains an `exportedBy` field to show the mod and plugin that exported the given schema
+- Plugins can now have their own IDs, and can be individually disabled through the config
+
 ## [0.3.5+26.2-snapshot-8]
 
 **Note: Fabric Model Loading API support has been temporarily disabled in this version**
