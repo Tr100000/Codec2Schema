@@ -1,8 +1,12 @@
 package io.github.tr100000.codec2schema.api;
 
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +18,7 @@ public final class CodecHandlerRegistry {
     private CodecHandlerRegistry() {}
 
     private static final List<Entry<?>> ENTRIES = new ObjectArrayList<>();
+    private static final List<SchemaModifier<? extends Codec<?>>> MODIFIERS = new ObjectArrayList<>();
 
     public static <T extends Codec<?>> void register(Predicate<Codec<?>> predicate, Function<T, ? extends CodecHandler<T>> factory) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -26,7 +31,13 @@ public final class CodecHandlerRegistry {
         register(predicate, (Function)(ignored -> factory.get()));
     }
 
+    public static void registerModifier(SchemaModifier<? extends Codec<?>> modifier) {
+        Objects.requireNonNull(modifier, "modifier is null");
+        MODIFIERS.add(modifier);
+    }
+
     @SuppressWarnings("unchecked")
+    @Contract(pure = true)
     public static <T extends Codec<?>> CodecHandler<T> getHandlerOrThrow(T codec) {
         for (Entry<?> entry : ENTRIES) {
             if (entry.predicate().test(codec)) {
@@ -42,5 +53,22 @@ public final class CodecHandlerRegistry {
         throw new IllegalStateException(String.format("No codec handler found for %s", codec.getClass().getName()));
     }
 
-    private record Entry<T extends Codec<?>>(Predicate<Codec<?>> predicate, Function<T, ? extends CodecHandler<T>> factory) {}
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @ApiStatus.Experimental
+    public static JsonObject applyModifiers(Codec<?> codec, JsonObject json, SchemaModifier.ModificationStage stage, boolean listUsedModifiersInJson) {
+        for (SchemaModifier modifier : MODIFIERS) {
+            if (modifier.shouldApplyTo(codec, stage)) {
+                json = modifier.apply(codec, json);
+
+                if (listUsedModifiersInJson) {
+                    JsonUtils.getOrCreateArray(json, "_modifiers").add(modifier.getClass().toString());
+                }
+
+                Codec2Schema.LOGGER.info("Applied modifier {}", modifier.getClass());
+            }
+        }
+        return json;
+    }
+
+    private record Entry<T extends Codec<?>>(Predicate<Codec<?>> predicate, Function<T, ? extends @Nullable CodecHandler<T>> factory) {}
 }

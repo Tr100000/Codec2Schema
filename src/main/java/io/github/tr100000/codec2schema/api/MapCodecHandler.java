@@ -3,8 +3,10 @@ package io.github.tr100000.codec2schema.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.MapCodec;
+import org.jetbrains.annotations.Contract;
 
 public interface MapCodecHandler<T extends MapCodec<?>> {
+    @Contract("_, _, _ -> new")
     default JsonObject toSchema(T codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
         JsonObject json = new JsonObject();
         json.addProperty("type", "object");

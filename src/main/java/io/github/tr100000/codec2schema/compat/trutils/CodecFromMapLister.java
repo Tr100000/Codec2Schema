@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CodecFromMapLister implements CodecValueLister {
     @Override
-    public @Nullable <T> List<ValueStringPair<T>> possibleValues(Codec<T> codec) {
+    public <T> @Nullable List<ValueStringPair<T>> possibleValues(Codec<T> codec) {
         if (codec instanceof CodecFromMap<?, T> codecFromMap) {
             return codecFromMap.map().values().stream()
                     .map(v -> new ValueStringPair<>(v, codecFromMap.map().inverse().get(v).toString()))

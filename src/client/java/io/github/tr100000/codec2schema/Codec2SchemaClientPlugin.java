@@ -11,7 +11,9 @@ import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.client.resources.WaypointStyle;
 import net.minecraft.client.resources.model.EquipmentClientInfo;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class Codec2SchemaClientPlugin implements Codec2SchemaPlugin {
     @Override
     public void generateSchemas(SchemaExporter exporter) {

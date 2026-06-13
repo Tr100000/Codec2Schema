@@ -1,14 +1,22 @@
 # Codec2Schema
-<!-- modrinth_exclude.start -->
-[![Link to Modrinth page](https://raw.githubusercontent.com/intergrav/devins-badges/refs/heads/v3/assets/cozy/available/modrinth_vector.svg)](https://modrinth.com/mod/codec2schema)
-<!-- modrinth_exclude.end -->
-Through the power of sheer will, mixins, and unchecked type casts, this mod transforms codecs into (mostly) usable JSON schemas.
+
+Through the power of mixins, sheer will, and unchecked type casts, this mod transforms codecs into (mostly) usable JSON schemas.
+
+## What is a Codec?
+
+Codecs are Mojang's way of easily serializing data to and from JSON. They define the structure of an object, meaning JSON schemas can be generated from them.
+
+## What is a JSON Schema?
+
+A JSON schema is a file that describes how JSON files should be structured, and can be used by IDEs to provide autocomplete when creating or editing JSON files.
+
+## About This Mod
 
 When installed, this mod exports JSON schemas for data and resource pack files to `<YOUR GAME DIRECTORY>/codec2schema`. You can use the API to export your own codecs as well!
 
-The generated JSON schemas will have autocomplete for registries (items, blocks, etc). This means that if you have mods that add items, for example, the ids for those items will show up for autocomplete. This is the main reason why I haven't provided any pre-generated schemas, if you were wondering.
+The generated JSON schemas will have autocomplete for registries (items, blocks, etc), including modded content.
 
-There is no guarantee that this will work.
+This mod is not perfect: there are many edge cases that aren't or can't be accounted for.
 
 <details>
 <summary>Example</summary>
@@ -16,8 +24,8 @@ There is no guarantee that this will work.
 The following is the generated JSON schema for [regional compliancies warnings](https://minecraft.wiki/w/Resource_pack#Regional_compliancies_warnings): 
 ```json
 {
-  "$ref": "#/definitions/def",
   "$schema": "https://json-schema.org/draft-07/schema",
+  "$ref": "#/definitions/def",
   "definitions": {
     "def": {
       "type": "object",
@@ -37,7 +45,8 @@ The following is the generated JSON schema for [regional compliancies warnings](
         "delay": {
           "type": "integer",
           "minimum": -9223372036854775808,
-          "maximum": 9223372036854775807
+          "maximum": 9223372036854775807,
+          "default": 0
         },
         "period": {
           "type": "integer",

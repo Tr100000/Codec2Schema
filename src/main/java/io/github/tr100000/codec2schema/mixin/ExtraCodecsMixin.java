@@ -25,7 +25,7 @@ import java.util.function.Function;
 @Mixin(ExtraCodecs.class)
 public abstract class ExtraCodecsMixin {
     @Inject(method = "intRangeWithMessage", at = @At("RETURN"), cancellable = true)
-    private static void intRangeWithMessage(int i, int j, Function<Integer, String> function, CallbackInfoReturnable<Codec<Integer>> cir) {
+    private static void intRangeWithMessage(int minInclusive, int maxInclusive, Function<Integer, String> error, CallbackInfoReturnable<Codec<Integer>> cir) {
         Codec<Integer> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedRangedNumberCodec<>() {
             @Override
@@ -35,18 +35,18 @@ public abstract class ExtraCodecsMixin {
 
             @Override
             public Optional<NumberBound<Integer>> min() {
-                return i > Integer.MIN_VALUE ? Optional.of(new NumberBound<>(i, false)) : Optional.empty();
+                return minInclusive > Integer.MIN_VALUE ? Optional.of(new NumberBound<>(minInclusive, false)) : Optional.empty();
             }
 
             @Override
             public Optional<NumberBound<Integer>> max() {
-                return j < Integer.MAX_VALUE ? Optional.of(new NumberBound<>(j, false)) : Optional.empty();
+                return maxInclusive < Integer.MAX_VALUE ? Optional.of(new NumberBound<>(maxInclusive, false)) : Optional.empty();
             }
         });
     }
 
     @Inject(method = "longRangeWithMessage", at = @At("RETURN"), cancellable = true)
-    private static void longRangeWithMessage(long l, long m, Function<Long, String> function, CallbackInfoReturnable<Codec<Long>> cir) {
+    private static void longRangeWithMessage(long minInclusive, long maxInclusive, Function<Long, String> error, CallbackInfoReturnable<Codec<Long>> cir) {
         Codec<Long> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedRangedNumberCodec<>() {
             @Override
@@ -56,18 +56,18 @@ public abstract class ExtraCodecsMixin {
 
             @Override
             public Optional<NumberBound<Long>> min() {
-                return l > Long.MIN_VALUE ? Optional.of(new NumberBound<>(l, false)) : Optional.empty();
+                return minInclusive > Long.MIN_VALUE ? Optional.of(new NumberBound<>(minInclusive, false)) : Optional.empty();
             }
 
             @Override
             public Optional<NumberBound<Long>> max() {
-                return m < Long.MAX_VALUE ? Optional.of(new NumberBound<>(m, false)) : Optional.empty();
+                return maxInclusive < Long.MAX_VALUE ? Optional.of(new NumberBound<>(maxInclusive, false)) : Optional.empty();
             }
         });
     }
 
-    @Inject(method = "floatRangeMinExclusiveWithMessage", at = @At("RETURN"), cancellable = true)
-    private static void floatRangeMinInclusiveWithMessage(float f, float g, Function<Float, String> function, CallbackInfoReturnable<Codec<Float>> cir) {
+    @Inject(method = "floatRangeMinInclusiveWithMessage", at = @At("RETURN"), cancellable = true)
+    private static void floatRangeMinInclusiveWithMessage(float minInclusive, float maxInclusive, Function<Float, String> error, CallbackInfoReturnable<Codec<Float>> cir) {
         Codec<Float> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedRangedNumberCodec<>() {
             @Override
@@ -82,18 +82,18 @@ public abstract class ExtraCodecsMixin {
 
             @Override
             public Optional<NumberBound<Float>> min() {
-                return f > Float.MIN_VALUE ? Optional.of(new NumberBound<>(f, false)) : Optional.empty();
+                return minInclusive > Float.MIN_VALUE ? Optional.of(new NumberBound<>(minInclusive, false)) : Optional.empty();
             }
 
             @Override
             public Optional<NumberBound<Float>> max() {
-                return g < Float.MAX_VALUE ? Optional.of(new NumberBound<>(g, false)) : Optional.empty();
+                return maxInclusive < Float.MAX_VALUE ? Optional.of(new NumberBound<>(maxInclusive, false)) : Optional.empty();
             }
         });
     }
 
     @Inject(method = "floatRangeMinExclusiveWithMessage", at = @At("RETURN"), cancellable = true)
-    private static void floatRangeMinExclusiveWithMessage(float f, float g, Function<Float, String> function, CallbackInfoReturnable<Codec<Float>> cir) {
+    private static void floatRangeMinExclusiveWithMessage(float minExclusive, float maxInclusive, Function<Float, String> error, CallbackInfoReturnable<Codec<Float>> cir) {
         Codec<Float> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedRangedNumberCodec<>() {
             @Override
@@ -108,23 +108,23 @@ public abstract class ExtraCodecsMixin {
 
             @Override
             public Optional<NumberBound<Float>> min() {
-                return f > Float.MIN_VALUE ? Optional.of(new NumberBound<>(f, true)) : Optional.empty();
+                return minExclusive > Float.MIN_VALUE ? Optional.of(new NumberBound<>(minExclusive, true)) : Optional.empty();
             }
 
             @Override
             public Optional<NumberBound<Float>> max() {
-                return g < Float.MAX_VALUE ? Optional.of(new NumberBound<>(g, false)) : Optional.empty();
+                return maxInclusive < Float.MAX_VALUE ? Optional.of(new NumberBound<>(maxInclusive, false)) : Optional.empty();
             }
         });
     }
 
     @Inject(method = "orCompressed(Lcom/mojang/serialization/Codec;Lcom/mojang/serialization/Codec;)Lcom/mojang/serialization/Codec;", at = @At("RETURN"), cancellable = true)
-    private static <E> void orCompressed(Codec<E> codec, Codec<E> codec2, CallbackInfoReturnable<Codec<E>> cir) {
+    private static <E> void orCompressed(Codec<E> normal, Codec<E> compressed, CallbackInfoReturnable<Codec<E>> cir) {
         Codec<E> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedCodec<>() {
             @Override
             public Codec<E> original() {
-                return codec;
+                return normal;
             }
 
             @Override
@@ -140,12 +140,12 @@ public abstract class ExtraCodecsMixin {
     }
 
     @Inject(method = "orCompressed(Lcom/mojang/serialization/MapCodec;Lcom/mojang/serialization/MapCodec;)Lcom/mojang/serialization/MapCodec;", at = @At("RETURN"), cancellable = true)
-    private static <E> void orCompressedMap(MapCodec<E> mapCodec, MapCodec<E> mapCodec2, CallbackInfoReturnable<MapCodec<E>> cir) {
+    private static <E> void orCompressedMap(MapCodec<E> normal, MapCodec<E> compressed, CallbackInfoReturnable<MapCodec<E>> cir) {
         MapCodec<E> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedMapCodec<>() {
             @Override
             public MapCodec<E> original() {
-                return mapCodec;
+                return normal;
             }
 
             @Override
@@ -156,7 +156,7 @@ public abstract class ExtraCodecsMixin {
     }
 
     @Inject(method = "dispatchOptionalValue", at = @At("RETURN"), cancellable = true)
-    private static <K, V> void dispatchOptionalValue(String string, String string2, Codec<K> codec, Function<? super V, ? extends K> function, Function<? super K, ? extends Codec<? extends V>> function2, CallbackInfoReturnable<MapCodec<V>> cir) {
+    private static <K, V> void dispatchOptionalValue(String typeKey, String valueKey, Codec<K> typeCodec, Function<? super V, ? extends K> typeGetter, Function<? super K, ? extends Codec<? extends V>> valueCodec, CallbackInfoReturnable<MapCodec<V>> cir) {
         MapCodec<V> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedDispatchOptionalValueMapCodec<K, V>() {
             @Override
@@ -166,22 +166,22 @@ public abstract class ExtraCodecsMixin {
 
             @Override
             public String typeKey() {
-                return string;
+                return typeKey;
             }
 
             @Override
             public String dispatchKey() {
-                return string2;
+                return valueKey;
             }
 
             @Override
             public Codec<K> keyCodec() {
-                return codec;
+                return typeCodec;
             }
 
             @Override
             public Function<? super K, ? extends Codec<? extends V>> valueCodecFunction() {
-                return function2;
+                return valueCodec;
             }
         });
     }
@@ -208,7 +208,7 @@ public abstract class ExtraCodecsMixin {
     }
 
     @Inject(method = "retrieveContext", at = @At("RETURN"), cancellable = true)
-    private static <E> void retrieveContext(Function<DynamicOps<?>, DataResult<E>> function, CallbackInfoReturnable<MapCodec<E>> cir) {
+    private static <E> void retrieveContext(Function<DynamicOps<?>, DataResult<E>> getter, CallbackInfoReturnable<MapCodec<E>> cir) {
         MapCodec<E> capturedReturnValue = cir.getReturnValue();
         cir.setReturnValue(new WrappedMapCodec<>() {
             @Override
@@ -229,14 +229,14 @@ public abstract class ExtraCodecsMixin {
     }
 
     @Inject(method = "idResolverCodec(Lcom/mojang/serialization/Codec;Ljava/util/function/Function;Ljava/util/function/Function;)Lcom/mojang/serialization/Codec;", at = @At("RETURN"), cancellable = true)
-    private static <I, E> void idResolverCodec(Codec<I> codec, Function<I, E> function, Function<E, I> function2, CallbackInfoReturnable<Codec<E>> cir) {
+    private static <I, E> void idResolverCodec(Codec<I> value, Function<I, E> fromId, Function<E, I> toId, CallbackInfoReturnable<Codec<E>> cir) {
         Codec<E> capturedReturnValue = cir.getReturnValue();
-        if (codec instanceof CodecWithValuePairs<I> codecWithValuePairs) {
+        if (value instanceof CodecWithValuePairs<I> codecWithValuePairs) {
             cir.setReturnValue(new CodecWithValuePairs<>() {
                 @Override
                 public List<ValueStringPair<E>> possibleValues() {
                     return codecWithValuePairs.possibleValues().stream()
-                            .map(pair -> pair.mapValue(function))
+                            .map(pair -> pair.mapValue(fromId))
                             .toList();
                 }
 
@@ -248,6 +248,11 @@ public abstract class ExtraCodecsMixin {
                 @Override
                 public String toString() {
                     return capturedReturnValue.toString();
+                }
+
+                @Override
+                public Codec<?> fallbackCodec() {
+                    return value;
                 }
             });
         }

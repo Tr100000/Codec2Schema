@@ -3,16 +3,20 @@ package io.github.tr100000.codec2schema;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.ChatType;
+import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.server.dialog.Dialog;
 import net.minecraft.tags.TagFile;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.animal.chicken.ChickenVariant;
 import net.minecraft.world.entity.animal.cow.CowVariant;
 import net.minecraft.world.entity.animal.feline.CatVariant;
 import net.minecraft.world.entity.animal.frog.FrogVariant;
+import net.minecraft.world.entity.animal.nautilus.ZombieNautilusVariant;
 import net.minecraft.world.entity.animal.pig.PigVariant;
 import net.minecraft.world.entity.animal.wolf.WolfSoundVariant;
 import net.minecraft.world.entity.animal.wolf.WolfVariant;
@@ -47,9 +51,15 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.timeline.Timeline;
 
+import java.util.List;
+
 public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
+    private final ExportedSchemasTracker exportedSchemasTracker = new ExportedSchemasTracker();
+
     @Override
     public void generateSchemas(SchemaExporter exporter) {
+        exportedSchemasTracker.clear();
+
         // https://minecraft.wiki/w/Data_pack#Folder_structure
         exportDataCodec(exporter, TagFile.CODEC, "tags.json");
         exportDataCodec(exporter, Advancement.CODEC, "advancement.json");
@@ -58,6 +68,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, ChatType.DIRECT_CODEC, "chat_type.json");
         exportDataCodec(exporter, ChickenVariant.DIRECT_CODEC, "chicken_variant.json");
         exportDataCodec(exporter, CowVariant.DIRECT_CODEC, "cow_variant.json");
+        exportDataCodec(exporter, DamageType.DIRECT_CODEC, "damage_type.json");
         exportDataCodec(exporter, Dialog.DIRECT_CODEC, "dialog.json");
         exportDataCodec(exporter, LevelStem.CODEC, "dimension.json");
         exportDataCodec(exporter, DimensionType.DIRECT_CODEC, "dimension_type.json");
@@ -80,6 +91,8 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, TrimPattern.DIRECT_CODEC, "trim_pattern.json");
         exportDataCodec(exporter, WolfSoundVariant.DIRECT_CODEC, "wolf_sound_variant.json");
         exportDataCodec(exporter, WolfVariant.DIRECT_CODEC, "wolf_variant.json");
+        exportDataCodec(exporter, ZombieNautilusVariant.DIRECT_CODEC, "zombie_nautilus_variant.json");
+
         exportDataWorldgenCodec(exporter, Biome.DIRECT_CODEC, "biome.json");
         exportDataWorldgenCodec(exporter, ConfiguredWorldCarver.DIRECT_CODEC, "configured_carver.json");
         exportDataWorldgenCodec(exporter, ConfiguredFeature.DIRECT_CODEC, "configured_feature.json");
@@ -94,13 +107,42 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataWorldgenCodec(exporter, WorldPreset.DIRECT_CODEC, "world_preset.json");
         exportDataWorldgenCodec(exporter, FlatLevelGeneratorPreset.DIRECT_CODEC, "flat_level_generator_preset.json");
         exportDataWorldgenCodec(exporter, MultiNoiseBiomeSourceParameterList.DIRECT_CODEC, "multi_noise_biome_source_parameter_list.json");
+
+        checkExportedAll(RegistryDataLoader.WORLDGEN_REGISTRIES);
+        checkExportedAll(RegistryDataLoader.DIMENSION_REGISTRIES);
     }
 
     private void exportDataCodec(SchemaExporter exporter, Codec<?> codec, String path) {
         exporter.accept(codec, "data", path);
+        exportedSchemasTracker.add(codec);
     }
 
     private void exportDataWorldgenCodec(SchemaExporter exporter, Codec<?> codec, String path) {
         exporter.accept(codec, "data", "worldgen", path);
+        exportedSchemasTracker.add(codec);
+    }
+
+    private void checkExportedAll(List<RegistryDataLoader.RegistryData<?>> registryList) {
+        registryList.forEach(r -> exportedSchemasTracker.checkHas(r.elementCodec(), r.key().identifier().toString()));
+    }
+
+    private record ExportedSchemasTracker(List<Codec<?>> codecs) {
+        public ExportedSchemasTracker() {
+            this(new ObjectArrayList<>());
+        }
+
+        public void clear() {
+            codecs.clear();
+        }
+
+        public void add(Codec<?> codec) {
+            codecs.add(codec);
+        }
+
+        public void checkHas(Codec<?> other, String name) {
+            if (!codecs.contains(other)) {
+                Codec2Schema.LOGGER.warn("Didn't export {}", name);
+            }
+        }
     }
 }

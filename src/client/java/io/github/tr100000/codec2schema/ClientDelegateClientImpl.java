@@ -1,17 +1,16 @@
 package io.github.tr100000.codec2schema;
 
-import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class ClientDelegateClientImpl extends ClientDelegate {
-    private static final List<String> ENTRYPOINT_KEYS = List.of("codec2schema:main", "codec2schema:client");
-
     @Override
     public void registerHandlers() {
-        Codec2Schema.registerHandlers(ENTRYPOINT_KEYS);
+        Codec2Schema.registerHandlers(PluginSide.COMMON, PluginSide.CLIENT);
     }
 
     @Override
     public void generateSchemas() {
-        Codec2Schema.generateSchemas(ENTRYPOINT_KEYS);
+        Codec2Schema.generateSchemas(PluginSide.COMMON, PluginSide.CLIENT);
     }
 }

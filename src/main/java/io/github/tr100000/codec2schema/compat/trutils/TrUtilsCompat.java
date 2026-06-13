@@ -1,18 +1,24 @@
 package io.github.tr100000.codec2schema.compat.trutils;
 
+import io.github.tr100000.codec2schema.ModUtils;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.CodecValueLister;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 public class TrUtilsCompat implements Codec2SchemaPlugin {
-    private boolean trutilsIsLoaded() {
-        return FabricLoader.getInstance().isModLoaded("trutils");
+    @Override
+    public void registerHandlers() {
+        CodecValueLister.LISTERS.add(new CodecFromMapLister());
     }
 
     @Override
-    public void registerHandlers() {
-        if (trutilsIsLoaded()) {
-            CodecValueLister.LISTERS.add(new CodecFromMapLister());
-        }
+    public boolean shouldRun() {
+        return ModUtils.hasTrUtils();
+    }
+
+    @Override
+    public @Nullable Identifier getId() {
+        return ModUtils.id("common/trutils_compat");
     }
 }

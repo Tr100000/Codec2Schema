@@ -6,7 +6,18 @@ import com.mojang.serialization.codecs.ListCodec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Rotations;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.level.levelgen.Xoroshiro128PlusPlus;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
 import java.util.Optional;
@@ -55,14 +66,31 @@ public class ListCodecHandler implements CodecHandler<Codec<?>> {
         SIZE_OVERRIDES.put(codecToOverride, new OverrideEntry(elementCodec, minSize, maxSize));
     }
 
+    public static void registerOverride(Codec<?> codecToOverride, Codec<?> elementCodec, int fixedSize) {
+        registerOverride(codecToOverride, elementCodec, Optional.of(fixedSize), Optional.of(fixedSize));
+    }
+
     private record OverrideEntry(Codec<?> elementCodec, Optional<Integer> minSize, Optional<Integer> maxSize) {}
 
     static {
-        registerOverride(ExtraCodecs.VECTOR2F, Codec.FLOAT, Optional.of(2), Optional.of(2));
-        registerOverride(ExtraCodecs.VECTOR3F, Codec.FLOAT, Optional.of(3), Optional.of(3));
-        registerOverride(ExtraCodecs.VECTOR3I, Codec.INT, Optional.of(3), Optional.of(3));
-        registerOverride(ExtraCodecs.VECTOR4F, Codec.FLOAT, Optional.of(4), Optional.of(4));
-        registerOverride(ExtraCodecs.QUATERNIONF_COMPONENTS, Codec.FLOAT, Optional.of(4), Optional.of(4));
-        registerOverride(ExtraCodecs.MATRIX4F, Codec.FLOAT, Optional.of(16), Optional.of(16));
+        registerOverride(Rotations.CODEC, Codec.FLOAT, 3);
+        registerOverride(ExtraCodecs.VECTOR2F, Codec.FLOAT, 2);
+        registerOverride(ExtraCodecs.VECTOR3F, Codec.FLOAT, 3);
+        registerOverride(ExtraCodecs.VECTOR3I, Codec.INT, 3);
+        registerOverride(ExtraCodecs.VECTOR4F, Codec.FLOAT, 4);
+        registerOverride(ExtraCodecs.QUATERNIONF_COMPONENTS, Codec.FLOAT, 4);
+        registerOverride(ExtraCodecs.MATRIX4F, Codec.FLOAT, 16);
+        registerOverride(Vec2.CODEC, Codec.FLOAT, 2);
+        registerOverride(Vec3.CODEC, Codec.FLOAT, 3);
+
+        registerOverride(BlockPos.CODEC, Codec.INT, 3);
+        registerOverride(UUIDUtil.CODEC, Codec.INT, 4);
+        registerOverride(Vec3i.CODEC, Codec.INT, 3);
+        registerOverride(ChunkPos.CODEC, Codec.INT, 2);
+        registerOverride(BoundingBox.CODEC, Codec.INT, 6);
+
+        registerOverride(Xoroshiro128PlusPlus.CODEC, Codec.LONG, 2);
+
+        registerOverride(SignText.LINES_CODEC, ComponentSerialization.CODEC, 4);
     }
 }

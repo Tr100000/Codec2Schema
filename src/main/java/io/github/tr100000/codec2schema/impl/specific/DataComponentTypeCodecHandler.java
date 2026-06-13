@@ -18,10 +18,13 @@ public class DataComponentTypeCodecHandler implements CodecHandler<Codec<?>> {
 
     @Override
     public JsonObject toSchema(Codec<?> codec, SchemaContext context, SchemaContext.DefinitionContext definitionContext) {
-        return CodecWithValuesHandler.createFromValues(BuiltInRegistries.DATA_COMPONENT_TYPE.stream()
-                .filter(type -> !type.isTransient())
-                .map(BuiltInRegistries.DATA_COMPONENT_TYPE::getKey)
-                .map(Identifier::toString));
+        return CodecWithValuesHandler.createFromValues(
+                context,
+                BuiltInRegistries.DATA_COMPONENT_TYPE.stream()
+                        .filter(type -> !type.isTransient())
+                        .map(BuiltInRegistries.DATA_COMPONENT_TYPE::getKey)
+                        .map(Identifier::toString),
+                Identifier.CODEC);
     }
 
     @Override

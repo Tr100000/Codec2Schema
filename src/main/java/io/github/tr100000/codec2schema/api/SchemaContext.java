@@ -3,7 +3,9 @@ package io.github.tr100000.codec2schema.api;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.Codec2Schema;
+import io.github.tr100000.codec2schema.Codec2SchemaConfig;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -16,10 +18,15 @@ public class SchemaContext {
     private final Map<String, DefinitionEntry> definitions = new Object2ObjectArrayMap<>();
     private final LinkedList<String> definitionStack = new LinkedList<>();
 
-    public boolean debugMode = false;
-    public boolean allowInline = true;
+    public boolean debugMode;
+    public boolean allowInline;
 
-    public void addDefinition(String name, Codec<?> codec, JsonObject json) {
+    public SchemaContext() {
+        debugMode = Codec2SchemaConfig.INSTANCE.defaultDebugMode();
+        allowInline = Codec2SchemaConfig.INSTANCE.defaultAllowInline();
+    }
+
+    public void addDefinition(String name, @Nullable Codec<?> codec, JsonObject json) {
         Objects.requireNonNull(name, "name is null");
         Objects.requireNonNull(json, "json is null");
         definitions.put(name, new FinishedDefinitionEntry(codec, json));
@@ -41,20 +48,26 @@ public class SchemaContext {
         CodecHandler<Codec<?>> handler = CodecHandlerRegistry.getHandlerOrThrow(codec);
 
         if (allowInline && handler.shouldInline(codec)) {
-            return handler.toSchema(codec, this, new DefinitionContext(Optional.empty(), definitionStack));
+            JsonObject json = handler.toSchema(codec, this, new DefinitionContext(Optional.empty(), definitionStack));
+            if (debugMode) {
+                json.addProperty("_debug", codec.toString());
+                json.addProperty("_handler", handler.getClass().toString());
+            }
+            return CodecHandlerRegistry.applyModifiers(codec, json, SchemaModifier.ModificationStage.REQUEST, debugMode);
         }
 
         if (entry.isEmpty()) {
             String name = getUniqueDefinition(JsonUtils.toSchemaSafeString(handler.getName(codec).orElse("def")));
             definitions.put(name, new TentativeDefinitionEntry(codec));
-            if (debugMode) Codec2Schema.LOGGER.info(codec.toString());
             definitionStack.push(name);
+            if (debugMode) Codec2Schema.LOGGER.info(codec.toString());
             JsonObject json = handler.toSchema(codec, this, new DefinitionContext(Optional.of(name), definitionStack));
             definitionStack.pop();
             if (debugMode) {
                 json.addProperty("_debug", codec.toString());
                 json.addProperty("_handler", handler.getClass().toString());
             }
+            json = CodecHandlerRegistry.applyModifiers(codec, json, SchemaModifier.ModificationStage.REQUEST, debugMode);
             addDefinition(name, codec, json);
             return createRef(name);
         }
@@ -63,6 +76,7 @@ public class SchemaContext {
         }
     }
 
+    @Contract(pure = true)
     public Optional<String> tryGetDefinitionName(Codec<?> codec) {
         return definitions.entrySet().stream()
                 .filter(e -> codec.equals(e.getValue().codec()))
@@ -70,6 +84,7 @@ public class SchemaContext {
                 .findAny();
     }
 
+    @Contract(value = "_ -> new", pure = true)
     public JsonObject createRef(String name) {
         if (name.isBlank()) throw new IllegalArgumentException("Name must not be blank!");
         JsonObject json = new JsonObject();
@@ -96,14 +111,20 @@ public class SchemaContext {
         return finalName;
     }
 
+    @Contract(mutates = "param1")
     public void addDefinitions(JsonObject json) {
+        if (definitions.isEmpty()) return;
+
         JsonObject definitionsObject = new JsonObject();
         definitions.forEach((name, definition) -> {
-            if (definition instanceof FinishedDefinitionEntry finishedEntry) {
-                definitionsObject.add(name, finishedEntry.json());
+            if (definition instanceof FinishedDefinitionEntry(Codec<?> codec, JsonObject entryJson)) {
+                if (codec != null) {
+                    entryJson = CodecHandlerRegistry.applyModifiers(codec, entryJson, SchemaModifier.ModificationStage.DEFINITION, debugMode);
+                }
+                definitionsObject.add(name, entryJson);
             }
             else {
-                throw new IllegalStateException(String.format("Definition %s was never completed!", name));
+                throw new IllegalStateException(String.format("Definition %s was never completed! This should never happen!", name));
             }
         });
         json.add("definitions", definitionsObject);

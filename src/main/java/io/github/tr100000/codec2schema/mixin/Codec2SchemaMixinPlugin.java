@@ -1,6 +1,6 @@
 package io.github.tr100000.codec2schema.mixin;
 
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.tr100000.codec2schema.ModUtils;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -20,11 +20,11 @@ public class Codec2SchemaMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains("compat.fabric")) {
-            return FabricLoader.getInstance().isModLoaded("fabric-api");
+            if (mixinClassName.endsWith("CustomUnbakedBlockStateModelRegistry"))
+                return ModUtils.hasFabricModelLoadingApi();
         }
-        else {
-            return true;
-        }
+
+        return true;
     }
 
     @Override

@@ -7,8 +7,10 @@ import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.MapCodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import io.github.tr100000.codec2schema.mixin.client.compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor;
+import org.jspecify.annotations.NullMarked;
 
 // This is only used once
+@NullMarked
 public class KeyExistsCodecHandler implements MapCodecHandler<MapCodec<?>> {
     public static boolean predicate(MapCodec<?> codec) {
         return codec == CustomUnbakedBlockStateModelRegistryAccessor.getVariantMapCodec();

@@ -7,6 +7,7 @@ import io.github.tr100000.codec2schema.api.SchemaContext;
 import io.github.tr100000.codec2schema.impl.UnboundedMapCodecHandler;
 import net.fabricmc.fabric.impl.dimension.FailSoftMapCodec;
 
+@SuppressWarnings("UnstableApiUsage")
 public class FailSoftMapCodecHandler implements CodecHandler<FailSoftMapCodec<?, ?>> {
     public static boolean predicate(Codec<?> codec) {
         return codec instanceof FailSoftMapCodec<?, ?>;

@@ -104,8 +104,6 @@ modrinth {
     syncBodyFrom = rootProject.file("README.md").text
 }
 
-tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
-
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
