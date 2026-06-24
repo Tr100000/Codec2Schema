@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.6+26.3-snapshot-1]
+
+**Update to 26.3-snapshot-1**
+
 ## [0.3.6+26.2-pre-6]
 
 **Fabric Model Loading API support has been re-enabled in this release**

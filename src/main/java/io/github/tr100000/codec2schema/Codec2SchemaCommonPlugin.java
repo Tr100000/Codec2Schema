@@ -39,13 +39,15 @@ import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.DecoratedPotPattern;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerConfig;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
+import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorPreset;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
@@ -80,6 +82,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, CowSoundVariant.DIRECT_CODEC, "cow_sound_variant.json");
         exportDataCodec(exporter, CowVariant.DIRECT_CODEC, "cow_variant.json");
         exportDataCodec(exporter, DamageType.DIRECT_CODEC, "damage_type.json");
+        exportDataCodec(exporter, DecoratedPotPattern.CODEC, "decorated_pot_pattern.json");
         exportDataCodec(exporter, Dialog.DIRECT_CODEC, "dialog.json");
         exportDataCodec(exporter, LevelStem.CODEC, "dimension.json");
         exportDataCodec(exporter, DimensionType.DIRECT_CODEC, "dimension_type.json");
@@ -111,8 +114,10 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
 
         exportDataWorldgenCodec(exporter, Biome.DIRECT_CODEC, "biome.json");
         exportDataWorldgenCodec(exporter, ConfiguredWorldCarver.DIRECT_CODEC, "configured_carver.json");
-        exportDataWorldgenCodec(exporter, ConfiguredFeature.DIRECT_CODEC, "configured_feature.json");
         exportDataWorldgenCodec(exporter, DensityFunctions.DIRECT_CODEC, "density_function.json");
+        exportDataWorldgenCodec(exporter, SurfaceRules.RuleSource.DIRECT_CODEC, "material_rule.json");
+        exportDataWorldgenCodec(exporter, SurfaceRules.ConditionSource.DIRECT_CODEC, "material_condition.json");
+        exportDataWorldgenCodec(exporter, Feature.DIRECT_CODEC, "feature.json");
         exportDataWorldgenCodec(exporter, NormalNoise.NoiseParameters.DIRECT_CODEC, "noise.json");
         exportDataWorldgenCodec(exporter, NoiseGeneratorSettings.DIRECT_CODEC, "noise_settings.json");
         exportDataWorldgenCodec(exporter, PlacedFeature.DIRECT_CODEC, "placed_feature.json");
