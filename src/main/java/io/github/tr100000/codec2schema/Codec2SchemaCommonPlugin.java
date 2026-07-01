@@ -46,7 +46,7 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.SurfaceRules;
-import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
+import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorPreset;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -113,7 +113,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, ZombieNautilusVariant.DIRECT_CODEC, "zombie_nautilus_variant.json");
 
         exportDataWorldgenCodec(exporter, Biome.DIRECT_CODEC, "biome.json");
-        exportDataWorldgenCodec(exporter, ConfiguredWorldCarver.DIRECT_CODEC, "configured_carver.json");
+        exportDataWorldgenCodec(exporter, WorldCarver.DIRECT_CODEC, "carver.json");
         exportDataWorldgenCodec(exporter, DensityFunctions.DIRECT_CODEC, "density_function.json");
         exportDataWorldgenCodec(exporter, SurfaceRules.RuleSource.DIRECT_CODEC, "material_rule.json");
         exportDataWorldgenCodec(exporter, SurfaceRules.ConditionSource.DIRECT_CODEC, "material_condition.json");
