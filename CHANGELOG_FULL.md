@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.6+26.3-snapshot-3]
+
+**Update to 26.3-snapshot-3**
+
 ## [0.3.6+26.3-snapshot-2]
 
 **Update to 26.3-snapshot-2**

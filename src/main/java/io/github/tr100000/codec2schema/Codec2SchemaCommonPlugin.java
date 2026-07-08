@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
@@ -34,6 +35,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.providers.EnchantmentProvider;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
+import net.minecraft.world.item.slot.SlotSources;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.biome.Biome;
@@ -59,9 +61,12 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import net.minecraft.world.timeline.Timeline;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
     private final ExportedSchemasTracker exportedSchemasTracker = new ExportedSchemasTracker();
@@ -71,7 +76,6 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportedSchemasTracker.clear();
 
         // https://minecraft.wiki/w/Data_pack#Folder_structure
-        exportDataCodec(exporter, TagFile.CODEC, "tags.json");
         exportDataCodec(exporter, Advancement.CODEC, "advancement.json");
         exportDataCodec(exporter, BannerPattern.DIRECT_CODEC, "banner_pattern.json");
         exportDataCodec(exporter, CatSoundVariant.DIRECT_CODEC, "cat_sound_variant.json");
@@ -93,12 +97,15 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, LootItemFunctions.ROOT_CODEC, "item_modifier.json");
         exportDataCodec(exporter, JukeboxSong.DIRECT_CODEC, "jukebox_song.json");
         exportDataCodec(exporter, LootTable.DIRECT_CODEC, "loot_table.json");
+        exportDataCodec(exporter, NumberProviders.DIRECT_CODEC, "number_provider.json");
         exportDataCodec(exporter, PaintingVariant.DIRECT_CODEC, "painting_variant.json");
         exportDataCodec(exporter, PigSoundVariant.DIRECT_CODEC, "pig_sound_variant.json");
         exportDataCodec(exporter, PigVariant.DIRECT_CODEC, "pig_variant.json");
         exportDataCodec(exporter, LootItemCondition.DIRECT_CODEC, "predicate.json");
         exportDataCodec(exporter, Recipe.CODEC, "recipe.json");
+        exportDataCodec(exporter, SlotSources.DIRECT_CODEC, "slot_source.json");
         exportDataCodec(exporter, SulfurCubeArchetype.DIRECT_CODEC, "sulfur_cube_archetype.json");
+        exportDataCodec(exporter, TagFile.CODEC, "tags.json");
         exportDataCodec(exporter, TestEnvironmentDefinition.DIRECT_CODEC, "test_environment.json");
         exportDataCodec(exporter, GameTestInstance.DIRECT_CODEC, "test_instance.json");
         exportDataCodec(exporter, Timeline.DIRECT_CODEC, "timeline.json");
@@ -129,8 +136,11 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataWorldgenCodec(exporter, FlatLevelGeneratorPreset.DIRECT_CODEC, "flat_level_generator_preset.json");
         exportDataWorldgenCodec(exporter, MultiNoiseBiomeSourceParameterList.DIRECT_CODEC, "multi_noise_biome_source_parameter_list.json");
 
-        checkExportedAll(RegistryDataLoader.WORLDGEN_REGISTRIES);
-        checkExportedAll(RegistryDataLoader.DIMENSION_REGISTRIES);
+        Set<RegistryDataLoader.RegistryData<?>> registries = new ObjectOpenHashSet<>();
+        registries.addAll(RegistryDataLoader.WORLD_REGISTRIES);
+        registries.addAll(RegistryDataLoader.DIMENSION_REGISTRIES);
+        registries.addAll(RegistryDataLoader.RELOADABLE_REGISTRIES);
+        checkExportedAll(registries);
     }
 
     private void exportDataCodec(SchemaExporter exporter, Codec<?> codec, String path) {
@@ -143,7 +153,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportedSchemasTracker.add(codec);
     }
 
-    private void checkExportedAll(List<RegistryDataLoader.RegistryData<?>> registryList) {
+    private void checkExportedAll(Collection<RegistryDataLoader.RegistryData<?>> registryList) {
         registryList.forEach(r -> exportedSchemasTracker.checkHas(r.elementCodec(), r.key().identifier().toString()));
     }
 
