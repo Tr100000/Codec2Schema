@@ -94,7 +94,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, EnchantmentProvider.DIRECT_CODEC, "enchantment_provider.json");
         exportDataCodec(exporter, FrogVariant.DIRECT_CODEC, "frog_variant.json");
         exportDataCodec(exporter, Instrument.DIRECT_CODEC, "instrument.json");
-        exportDataCodec(exporter, LootItemFunctions.ROOT_CODEC, "item_modifier.json");
+        exportDataCodec(exporter, LootItemFunctions.DIRECT_CODEC, "item_modifier.json");
         exportDataCodec(exporter, JukeboxSong.DIRECT_CODEC, "jukebox_song.json");
         exportDataCodec(exporter, LootTable.DIRECT_CODEC, "loot_table.json");
         exportDataCodec(exporter, NumberProviders.DIRECT_CODEC, "number_provider.json");

@@ -6,7 +6,6 @@
   "client": [
   ],
   "mixins": [
-    "compat.fabric.CustomUnbakedBlockStateModelRegistryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

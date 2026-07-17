@@ -11,5 +11,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @NullMarked
 public interface HolderSetCodecAccessor<E> {
     @Accessor
-    Codec<Holder<E>> getElementCodec();
+    Codec<Holder<E>> getTagKeyOrValuesCodec();
 }

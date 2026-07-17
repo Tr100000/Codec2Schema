@@ -10,10 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Rotations;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.levelgen.Xoroshiro128PlusPlus;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec2;
@@ -90,7 +88,5 @@ public class ListCodecHandler implements CodecHandler<Codec<?>> {
         registerOverride(BoundingBox.CODEC, Codec.INT, 6);
 
         registerOverride(Xoroshiro128PlusPlus.CODEC, Codec.LONG, 2);
-
-        registerOverride(SignText.LINES_CODEC, ComponentSerialization.CODEC, 4);
     }
 }
