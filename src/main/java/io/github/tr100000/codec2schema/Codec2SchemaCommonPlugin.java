@@ -102,7 +102,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, PigSoundVariant.DIRECT_CODEC, "pig_sound_variant.json");
         exportDataCodec(exporter, PigVariant.DIRECT_CODEC, "pig_variant.json");
         exportDataCodec(exporter, LootItemCondition.DIRECT_CODEC, "predicate.json");
-        exportDataCodec(exporter, Recipe.CODEC, "recipe.json");
+        exportDataCodec(exporter, Recipe.DIRECT_CODEC, "recipe.json");
         exportDataCodec(exporter, SlotSources.DIRECT_CODEC, "slot_source.json");
         exportDataCodec(exporter, SulfurCubeArchetype.DIRECT_CODEC, "sulfur_cube_archetype.json");
         exportDataCodec(exporter, TagFile.CODEC, "tags.json");
