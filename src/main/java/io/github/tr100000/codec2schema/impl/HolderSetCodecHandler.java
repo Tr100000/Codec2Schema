@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.SchemaContext;
 import io.github.tr100000.codec2schema.mixin.HolderSetCodecAccessor;
-import net.minecraft.resources.HolderSetCodec;
+import net.minecraft.core.registries.codec.HolderSetCodec;
 
 public record HolderSetCodecHandler(HolderSetCodec<?> codec) implements CodecHandler<HolderSetCodec<?>> {
     public static boolean predicate(Codec<?> codec) {

@@ -5,10 +5,10 @@ accessible class net/minecraft/network/chat/ComponentSerialization$FuzzyCodec
 accessible class net/minecraft/network/chat/ComponentSerialization$StrictEither
 accessible class net/minecraft/client/gui/font/FontManager$FontDefinitionFile
 
-accessible field net/minecraft/resources/RegistryFixedCodec registryKey Lnet/minecraft/resources/ResourceKey;
-accessible field net/minecraft/resources/RegistryFileCodec registryKey Lnet/minecraft/resources/ResourceKey;
-accessible field net/minecraft/resources/RegistryFileCodec elementCodec Lcom/mojang/serialization/Codec;
-accessible field net/minecraft/resources/RegistryFileCodec allowInline Z
+accessible field net/minecraft/core/registries/codec/RegistryFixedCodec registryKey Lnet/minecraft/resources/ResourceKey;
+accessible field net/minecraft/core/registries/codec/RegistryFileCodec registryKey Lnet/minecraft/resources/ResourceKey;
+accessible field net/minecraft/core/registries/codec/RegistryFileCodec elementCodec Lcom/mojang/serialization/Codec;
+accessible field net/minecraft/core/registries/codec/RegistryFileCodec allowInline Z
 accessible field net/minecraft/network/chat/ComponentSerialization$FuzzyCodec codecs Ljava/util/Collection;
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typeFieldName Ljava/lang/String;
 accessible field net/minecraft/network/chat/ComponentSerialization$StrictEither typed Lcom/mojang/serialization/MapCodec;

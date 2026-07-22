@@ -1,4 +1,7 @@
-**Update to 26.3-snapshot-4**
+**Update to 26.3-snapshot-5**
 
 ### Changes
-- Temporarily disabled support for Fabric Model Loading API
+- Re-enabled support for Fabric Model Loading API
+
+### Fixes
+- Fixed wrong codec being exported for `minecraft:recipe` 

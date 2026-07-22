@@ -6,7 +6,7 @@ import com.mojang.serialization.Codec;
 import io.github.tr100000.codec2schema.api.CodecHandler;
 import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.SchemaContext;
-import net.minecraft.resources.RegistryFileCodec;
+import net.minecraft.core.registries.codec.RegistryFileCodec;
 
 import java.util.Optional;
 

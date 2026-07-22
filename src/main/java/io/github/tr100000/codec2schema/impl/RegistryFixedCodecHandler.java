@@ -7,8 +7,8 @@ import io.github.tr100000.codec2schema.api.SchemaContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.codec.RegistryFixedCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
 import org.jspecify.annotations.NullMarked;
 
