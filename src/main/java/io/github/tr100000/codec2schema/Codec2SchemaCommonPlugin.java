@@ -125,7 +125,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataWorldgenCodec(exporter, SurfaceRules.RuleSource.DIRECT_CODEC, "material_rule.json");
         exportDataWorldgenCodec(exporter, SurfaceRules.ConditionSource.DIRECT_CODEC, "material_condition.json");
         exportDataWorldgenCodec(exporter, Feature.DIRECT_CODEC, "feature.json");
-        exportDataWorldgenCodec(exporter, NormalNoise.NoiseParameters.DIRECT_CODEC, "noise.json");
+        exportDataWorldgenCodec(exporter, NormalNoise.DIRECT_CODEC, "noise.json");
         exportDataWorldgenCodec(exporter, NoiseGeneratorSettings.DIRECT_CODEC, "noise_settings.json");
         exportDataWorldgenCodec(exporter, PlacedFeature.DIRECT_CODEC, "placed_feature.json");
         exportDataWorldgenCodec(exporter, StructureProcessorType.DIRECT_CODEC, "processor_list.json");
