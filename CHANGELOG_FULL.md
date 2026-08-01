@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.7+1.21.11]
+
+### Added
+- Added an option to export plugin info (ids, versions, exported schemas, etc.)
+
+### Changed
+- The game version in exported info now uses the internal name instead of the display name
+
 ## [0.3.6+1.21.11]
 
 Backported changes
