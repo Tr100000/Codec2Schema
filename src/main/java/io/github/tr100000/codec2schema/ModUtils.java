@@ -12,6 +12,10 @@ public final class ModUtils {
         return Identifier.fromNamespaceAndPath(Codec2Schema.MODID, path);
     }
 
+    public static boolean hasFabricApi() {
+        return FabricLoader.getInstance().isModLoaded("fabric-api");
+    }
+
     public static boolean hasFabricModelLoadingApi() {
         return FabricLoader.getInstance().isModLoaded("fabric-model-loading-api-v1");
     }

@@ -1,5 +1,6 @@
 package io.github.tr100000.codec2schema.compat.fabric;
 
+import com.google.gson.JsonObject;
 import io.github.tr100000.codec2schema.ModUtils;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.CodecHandlerRegistry;
@@ -16,7 +17,14 @@ public class FabricCompat implements Codec2SchemaPlugin {
 
     @Override
     public boolean shouldRun() {
-        return ModUtils.hasFabricDimensionsApi();
+        return ModUtils.hasFabricApi();
+    }
+
+    @Override
+    public void writeExtraInfo(JsonObject pluginInfoJson) {
+        if (!ModUtils.hasFabricApi()) {
+            pluginInfoJson.addProperty("disabledReason", "Fabric API is not loaded");
+        }
     }
 
     @Override
