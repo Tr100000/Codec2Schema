@@ -2,9 +2,12 @@ package io.github.tr100000.codec2schema;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.CodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.CodecValueLister;
+import io.github.tr100000.codec2schema.api.JsonUtils;
 import io.github.tr100000.codec2schema.api.MapCodecHandlerRegistry;
 import io.github.tr100000.codec2schema.api.SchemaExporter;
 import io.github.tr100000.codec2schema.impl.CodecWithValuePairsLister;
@@ -51,6 +54,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.minecraft.SharedConstants;
 import net.minecraft.resources.Identifier;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -58,6 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -84,15 +89,19 @@ public final class Codec2Schema {
         };
     }
 
-    private static List<ExportContext> getFilteredPlugins(PluginSide... sides) {
+    private static FilteredPlugins getFilteredPlugins(PluginSide... sides) {
         List<ExportContext> plugins = new ObjectArrayList<>();
+        List<ExportContext> disabledPlugins = new ObjectArrayList<>();
         for (PluginSide side : sides) {
-            List<ExportContext> sidedPlugins = FabricLoader.getInstance().getEntrypointContainers(getEntrypointKey(side), Codec2SchemaPlugin.class)
-                    .stream()
-                    .filter(c -> shouldRunPlugin(c, side))
-                    .map(container -> new ExportContext(container.getEntrypoint(), container.getProvider(), side))
-                    .toList();
-            plugins.addAll(sidedPlugins);
+            for (EntrypointContainer<Codec2SchemaPlugin> c : FabricLoader.getInstance().getEntrypointContainers(getEntrypointKey(side), Codec2SchemaPlugin.class)) {
+                ExportContext exportContext = new ExportContext(c.getEntrypoint(), c.getProvider(), side);
+                if (shouldRunPlugin(c, side)) {
+                    plugins.add(exportContext);
+                }
+                else {
+                    disabledPlugins.add(exportContext);
+                }
+            }
         }
 
         Set<Identifier> uniquePluginIds = new HashSet<>();
@@ -106,9 +115,9 @@ public final class Codec2Schema {
             throw new IllegalStateException("Duplicate plugin ids found!");
         }
 
-        uniquePluginIds.forEach(id -> LOGGER.debug("Running plugin {}", id));
+        uniquePluginIds.forEach(id -> LOGGER.debug("Found plugin {}", id));
 
-        return plugins;
+        return new FilteredPlugins(plugins, disabledPlugins);
     }
 
     private static boolean shouldRunPlugin(EntrypointContainer<Codec2SchemaPlugin> container, PluginSide side) {
@@ -122,7 +131,7 @@ public final class Codec2Schema {
 
     @ApiStatus.Internal
     public static void registerHandlers(PluginSide... sides) {
-        List<ExportContext> plugins = getFilteredPlugins(sides);
+        List<ExportContext> plugins = getFilteredPlugins(sides).pluginsToRun();
 
         plugins.forEach(context -> context.plugin().earlyRegisterHandlers());
 
@@ -220,11 +229,55 @@ public final class Codec2Schema {
     }
 
     public static void generateSchemas(PluginSide... entrypointKeys) {
+        FilteredPlugins filteredPlugins = getFilteredPlugins(entrypointKeys);
+        List<JsonObject> pluginInfos = new ObjectArrayList<>();
+
         SchemaExporter exporter = new SchemaExporter();
-        getFilteredPlugins(entrypointKeys).forEach(context -> {
+        filteredPlugins.pluginsToRun().forEach(context -> {
             exporter.setExportContext(context);
             context.plugin().generateSchemas(exporter);
-            exporter.clearOptions();
+
+            if (Codec2SchemaConfig.INSTANCE.exportPluginInfo()) {
+                pluginInfos.add(exporter.getPluginInfoJson());
+            }
+
+            exporter.clear();
         });
+
+        if (Codec2SchemaConfig.INSTANCE.exportPluginInfo()) {
+            JsonObject json = new JsonObject();
+
+            json.addProperty("minecraft", SharedConstants.getCurrentVersion().id());
+            json.addProperty("codec2schema", Codec2Schema.version());
+
+            JsonArray pluginsArray = JsonUtils.getOrCreateArray(json, "plugins");
+            pluginInfos.forEach(pluginsArray::add);
+
+            JsonArray disabledPluginsArray = JsonUtils.getOrCreateArray(json, "disabledPlugins");
+            filteredPlugins.disabledPlugins().forEach(context -> {
+                JsonObject pluginJson = SchemaExporter.getBasicPluginInfoJson(context);
+                context.plugin().writeExtraInfo(pluginJson);
+                disabledPluginsArray.add(pluginJson);
+            });
+
+            exportJsonSafe(EXPORT_ROOT_DIR.resolve("_plugins.json"), json);
+        }
     }
+
+    public static void exportJson(Path path, JsonObject json) throws IOException {
+        Files.createDirectories(path.getParent());
+        Files.deleteIfExists(path);
+
+        Files.writeString(path, Codec2Schema.GSON.toJson(json));
+    }
+
+    public static void exportJsonSafe(Path path, JsonObject json) {
+        try {
+            exportJson(path, json);
+        } catch (IOException e) {
+            LOGGER.error("Failed to write json to {}", path);
+        }
+    }
+
+    private record FilteredPlugins(List<ExportContext> pluginsToRun, List<ExportContext> disabledPlugins) {}
 }
