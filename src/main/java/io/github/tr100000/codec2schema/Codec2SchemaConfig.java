@@ -18,12 +18,20 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-public record Codec2SchemaConfig(boolean defaultDebugMode, boolean defaultAllowInline, boolean addExportedWith, List<PluginMatch> pluginsToDisable, @ApiStatus.Experimental boolean inlineSingularReference) {
+public record Codec2SchemaConfig(
+        boolean defaultDebugMode,
+        boolean defaultAllowInline,
+        boolean addExportedWith,
+        boolean exportPluginInfo,
+        List<PluginMatch> pluginsToDisable,
+        @ApiStatus.Experimental boolean inlineSingularReference
+) {
     public static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("codec2schema.json");
     public static final Codec<Codec2SchemaConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             optionalField(Codec.BOOL, "defaultDebugMode", false).forGetter(Codec2SchemaConfig::defaultDebugMode),
             optionalField(Codec.BOOL, "defaultAllowInline", true).forGetter(Codec2SchemaConfig::defaultAllowInline),
             optionalField(Codec.BOOL, "addExportedWith", false).forGetter(Codec2SchemaConfig::addExportedWith),
+            optionalField(Codec.BOOL, "exportPluginInfo", false).forGetter(Codec2SchemaConfig::exportPluginInfo),
             optionalField(PluginMatch.CODEC.listOf(), "pluginsToDisable", List.of()).forGetter(Codec2SchemaConfig::pluginsToDisable),
             optionalField(Codec.BOOL, "inlineSingularReference", false).forGetter(Codec2SchemaConfig::inlineSingularReference)
     ).apply(instance, Codec2SchemaConfig::new));

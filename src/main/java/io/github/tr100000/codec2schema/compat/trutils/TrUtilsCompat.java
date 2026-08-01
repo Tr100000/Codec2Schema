@@ -1,5 +1,6 @@
 package io.github.tr100000.codec2schema.compat.trutils;
 
+import com.google.gson.JsonObject;
 import io.github.tr100000.codec2schema.ModUtils;
 import io.github.tr100000.codec2schema.api.Codec2SchemaPlugin;
 import io.github.tr100000.codec2schema.api.CodecValueLister;
@@ -15,6 +16,13 @@ public class TrUtilsCompat implements Codec2SchemaPlugin {
     @Override
     public boolean shouldRun() {
         return ModUtils.hasTrUtils();
+    }
+
+    @Override
+    public void writeExtraInfo(JsonObject pluginInfoJson) {
+        if (!ModUtils.hasTrUtils()) {
+            pluginInfoJson.addProperty("disabledReason", "TrUtils is not loaded");
+        }
     }
 
     @Override
