@@ -1,3 +1,5 @@
+**Update to 26.3-snapshot-7**
+
 ### Added
 - Added an option to export plugin info (ids, versions, exported schemas, etc.)
 
