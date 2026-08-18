@@ -94,7 +94,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, EnchantmentProvider.DIRECT_CODEC, "enchantment_provider.json");
         exportDataCodec(exporter, FrogVariant.DIRECT_CODEC, "frog_variant.json");
         exportDataCodec(exporter, Instrument.DIRECT_CODEC, "instrument.json");
-        exportDataCodec(exporter, LootItemFunctions.DIRECT_CODEC, "item_modifier.json");
+        exportDataCodec(exporter, LootItemFunctions.TYPED_CODEC, "item_modifier.json");
         exportDataCodec(exporter, JukeboxSong.DIRECT_CODEC, "jukebox_song.json");
         exportDataCodec(exporter, LootTable.DIRECT_CODEC, "loot_table.json");
         exportDataCodec(exporter, NumberProviders.DIRECT_CODEC, "number_provider.json");
@@ -103,7 +103,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, PigVariant.DIRECT_CODEC, "pig_variant.json");
         exportDataCodec(exporter, LootItemCondition.DIRECT_CODEC, "predicate.json");
         exportDataCodec(exporter, Recipe.DIRECT_CODEC, "recipe.json");
-        exportDataCodec(exporter, SlotSources.DIRECT_CODEC, "slot_source.json");
+        exportDataCodec(exporter, SlotSources.TYPED_CODEC, "slot_source.json");
         exportDataCodec(exporter, SulfurCubeArchetype.DIRECT_CODEC, "sulfur_cube_archetype.json");
         exportDataCodec(exporter, TagFile.CODEC, "tags.json");
         exportDataCodec(exporter, TestEnvironmentDefinition.DIRECT_CODEC, "test_environment.json");
