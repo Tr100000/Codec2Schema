@@ -50,6 +50,7 @@ import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.densityfunction.DensityFunctions;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorPreset;
 import net.minecraft.world.level.levelgen.material.condition.MaterialCondition;
 import net.minecraft.world.level.levelgen.material.rule.MaterialRule;
@@ -63,7 +64,8 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.timeline.Timeline;
 
 import java.util.Collection;
@@ -86,6 +88,8 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, ChatType.DIRECT_CODEC, "chat_type.json");
         exportDataCodec(exporter, ChickenSoundVariant.DIRECT_CODEC, "chicken_sound_variant.json");
         exportDataCodec(exporter, ChickenVariant.DIRECT_CODEC, "chicken_variant.json");
+        exportDataCodec(exporter, ContextFloatProviders.DIRECT_CODEC, "context_float_provider.json");
+        exportDataCodec(exporter, ContextIntProviders.DIRECT_CODEC, "context_int_provider.json");
         exportDataCodec(exporter, CowSoundVariant.DIRECT_CODEC, "cow_sound_variant.json");
         exportDataCodec(exporter, CowVariant.DIRECT_CODEC, "cow_variant.json");
         exportDataCodec(exporter, DamageType.DIRECT_CODEC, "damage_type.json");
@@ -100,7 +104,6 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, LootItemFunctions.TYPED_CODEC, "item_modifier.json");
         exportDataCodec(exporter, JukeboxSong.DIRECT_CODEC, "jukebox_song.json");
         exportDataCodec(exporter, LootTable.DIRECT_CODEC, "loot_table.json");
-        exportDataCodec(exporter, NumberProviders.DIRECT_CODEC, "number_provider.json");
         exportDataCodec(exporter, PaintingVariant.DIRECT_CODEC, "painting_variant.json");
         exportDataCodec(exporter, PigSoundVariant.DIRECT_CODEC, "pig_sound_variant.json");
         exportDataCodec(exporter, PigVariant.DIRECT_CODEC, "pig_variant.json");
@@ -123,6 +126,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, ZombieNautilusVariant.DIRECT_CODEC, "zombie_nautilus_variant.json");
 
         exportDataWorldgenCodec(exporter, Biome.DIRECT_CODEC, "biome.json");
+        exportDataWorldgenCodec(exporter, BlockStateProvider.DIRECT_CODEC, "block_state_provider.json");
         exportDataWorldgenCodec(exporter, WorldCarver.DIRECT_CODEC, "carver.json");
         exportDataWorldgenCodec(exporter, DensityFunctions.DIRECT_CODEC, "density_function.json");
         exportDataWorldgenCodec(exporter, MaterialRule.DIRECT_CODEC, "material_rule.json");
