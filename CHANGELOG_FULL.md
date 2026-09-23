@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.7+26.4-snapshot-1]
+
+**Update to 26.4-snapshot-1**
+
 ## [0.3.7+26.3-pre-1]
 
 **Update to 26.3-pre-1**

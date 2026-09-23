@@ -49,6 +49,7 @@ import io.github.tr100000.codec2schema.impl.wrapped.RecursiveCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedConstrainedStringCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodecHandler;
+import io.github.tr100000.codec2schema.impl.wrapped.WrappedSingleKeyDispatchCodecHandler;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedUnitCodecHandler;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
@@ -166,6 +167,7 @@ public final class Codec2Schema {
         CodecHandlerRegistry.register(NumberCodecHandler::predicate, NumberCodecHandler::createHandler);
         CodecHandlerRegistry.register(WrappedRangedNumberCodecHandler::predicate, WrappedRangedNumberCodecHandler::new);
         CodecHandlerRegistry.register(WrappedConstrainedStringCodecHandler::predicate, WrappedConstrainedStringCodecHandler::new);
+        CodecHandlerRegistry.register(WrappedSingleKeyDispatchCodecHandler::predicate, WrappedSingleKeyDispatchCodecHandler::createHandler);
         CodecHandlerRegistry.register(PassthroughCodecHandler::predicate, PassthroughCodecHandler::new);
         CodecHandlerRegistry.register(WrappedUnitCodecHandler::predicate, WrappedUnitCodecHandler::new);
         CodecHandlerRegistry.register(CompoundListCodecHandler::predicate, CompoundListCodecHandler::new);

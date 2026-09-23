@@ -12,6 +12,7 @@ import io.github.tr100000.codec2schema.api.codec.WrappedCodec;
 import io.github.tr100000.codec2schema.api.codec.WrappedMapCodec;
 import io.github.tr100000.codec2schema.impl.map.WrappedDispatchOptionalValueMapCodec;
 import io.github.tr100000.codec2schema.impl.wrapped.WrappedRangedNumberCodec;
+import io.github.tr100000.codec2schema.impl.wrapped.WrappedSingleKeyDispatchCodec;
 import net.minecraft.util.ExtraCodecs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -259,5 +260,11 @@ public abstract class ExtraCodecsMixin {
         else {
             Codec2Schema.LOGGER.warn("uh oh");
         }
+    }
+
+    @Inject(method = "singleKeyDispatch", at = @At("RETURN"), cancellable = true)
+    private static <K, V> void singleKeyDispatch(Codec<K> keyCodec, Function<V, K> keyGetter, Function<K, Codec<V>> valueCodecGetter, CallbackInfoReturnable<Codec<V>> cir) {
+        Codec<V> capturedReturnValue = cir.getReturnValue();
+        cir.setReturnValue(new WrappedSingleKeyDispatchCodec<>(capturedReturnValue, keyCodec, keyGetter, valueCodecGetter));
     }
 }
