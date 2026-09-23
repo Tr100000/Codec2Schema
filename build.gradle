@@ -29,8 +29,6 @@ dependencies {
     compileOnly "maven.modrinth:trutils:${project.trutils_version}"
 }
 
-apply from: "https://raw.githubusercontent.com/Tr100000/modding-utils/main/scripts/devlogin.gradle"
-
 loom {
     splitEnvironmentSourceSets()
 
@@ -97,6 +95,7 @@ modrinth {
     projectId = "codec2schema"
     versionNumber = project.version
     versionName = project.version
+    versionType = project.modrinth_version_type
     uploadFile = jar
     additionalFiles = [sourcesJar]
     changelog = rootProject.file("CHANGELOG.md").text
