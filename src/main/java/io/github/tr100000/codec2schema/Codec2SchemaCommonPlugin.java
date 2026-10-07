@@ -44,6 +44,7 @@ import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.DecoratedPotPattern;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerConfig;
+import net.minecraft.world.level.block.sounds.BlockSoundSet;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
@@ -124,6 +125,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, WolfVariant.DIRECT_CODEC, "wolf_variant.json");
         exportDataCodec(exporter, WorldClock.DIRECT_CODEC, "world_clock.json");
         exportDataCodec(exporter, ZombieNautilusVariant.DIRECT_CODEC, "zombie_nautilus_variant.json");
+        exportDataCodec(exporter, BlockSoundSet.DIRECT_CODEC, "block_sound_set.json");
 
         exportDataWorldgenCodec(exporter, Biome.DIRECT_CODEC, "biome.json");
         exportDataWorldgenCodec(exporter, BlockStateProvider.DIRECT_CODEC, "block_state_provider.json");

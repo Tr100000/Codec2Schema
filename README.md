@@ -2,6 +2,8 @@
 
 Through the power of mixins, sheer will, and unchecked type casts, this mod transforms codecs into (mostly) usable JSON schemas.
 
+You can find the generated schemas for vanilla Minecraft [here](https://github.com/Tr100000/mc-json-schemas).
+
 ## What is a Codec?
 
 Codecs are Mojang's way of easily serializing data to and from JSON. They define the structure of an object, meaning JSON schemas can be generated from them.
@@ -21,7 +23,7 @@ This mod is not perfect: there are many edge cases that aren't or can't be accou
 <details>
 <summary>Example</summary>
 
-The following is the generated JSON schema for [regional compliancies warnings](https://minecraft.wiki/w/Resource_pack#Regional_compliancies_warnings): 
+The following is the generated JSON schema for [regional compliancies warnings](https://minecraft.wiki/w/Resource_pack#Regional_compliancies_warnings):
 ```json
 {
   "$schema": "https://json-schema.org/draft-07/schema",
