@@ -118,7 +118,7 @@ public class SchemaExporter implements BiConsumer<Codec<?>, String> {
 
         JsonArray failedArray = new JsonArray(failedPaths.size());
         failedArray.forEach(exportedArray::add);
-        if (!failedArray.isEmpty()) json.add("exported", exportedArray);
+        if (!failedArray.isEmpty()) json.add("failedToExport", failedArray);
 
         exportContext.plugin().writeExtraInfo(json);
 

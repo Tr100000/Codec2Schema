@@ -1,1 +1,2 @@
-**Update to 26.3-pre-1**
+### Fixed
+- Fixed the list of failed schemas not being exported to `_plugins.json`
