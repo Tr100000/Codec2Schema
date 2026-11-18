@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.8+26.4-snapshot-10]
+
+### Fixed
+- Fixed the list of failed schemas not being exported to `_plugins.json`
+
 ## [0.3.7+26.4-snapshot-3]
 
 **Update to 26.4-snapshot-3**

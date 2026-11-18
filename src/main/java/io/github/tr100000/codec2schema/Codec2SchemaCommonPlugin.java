@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.component.BlockTransformer;
+import net.minecraft.core.dispenser.DispenseBehavior;
 import net.minecraft.gametest.framework.GameTestInstance;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.ChatType;
@@ -126,6 +127,7 @@ public class Codec2SchemaCommonPlugin implements Codec2SchemaPlugin {
         exportDataCodec(exporter, WorldClock.DIRECT_CODEC, "world_clock.json");
         exportDataCodec(exporter, ZombieNautilusVariant.DIRECT_CODEC, "zombie_nautilus_variant.json");
         exportDataCodec(exporter, BlockSoundSet.DIRECT_CODEC, "block_sound_set.json");
+        exportDataCodec(exporter, DispenseBehavior.LIST_CODEC, "dispense_behavior.json");
 
         exportDataWorldgenCodec(exporter, Biome.DIRECT_CODEC, "biome.json");
         exportDataWorldgenCodec(exporter, BlockStateProvider.DIRECT_CODEC, "block_state_provider.json");
